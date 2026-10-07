@@ -46,6 +46,28 @@
       --sh-lg: 0 20px 60px rgba(0, 0, 0, 0.55);
     }
 
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --bg2: #e2e8f0;
+      --surface: #ffffff;
+      --surface2: #f8fafc;
+      --surface3: #e2e8f0;
+      --border: rgba(0, 0, 0, 0.08);
+      --border2: rgba(0, 0, 0, 0.12);
+      --text: #0f172a;
+      --text2: #334155;
+      --text3: #64748b;
+      --muted: #64748b;
+      --card: #ffffff;
+      --glass: rgba(0, 0, 0, 0.02);
+      --glass2: rgba(0, 0, 0, 0.04);
+      --sh: 0 4px 20px rgba(0, 0, 0, 0.06);
+      --sh-lg: 0 16px 40px rgba(0, 0, 0, 0.1);
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --filters-bg: rgba(241, 245, 249, 0.8);
+      --overlay-bg: rgba(15, 23, 42, 0.4);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -95,7 +117,7 @@
 
     /* ── HEADER ── */
     .header {
-      background: rgba(7, 12, 24, 0.94);
+      background: var(--header-bg, rgba(7, 12, 24, 0.94));
       border-bottom: 1px solid var(--border);
       padding: 0 36px;
       display: flex;
@@ -386,7 +408,7 @@
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-      background: rgba(12, 18, 34, 0.6);
+      background: var(--filters-bg, rgba(12, 18, 34, 0.6));
       border-bottom: 1px solid var(--border);
     }
 
@@ -850,7 +872,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.78);
+      background: var(--overlay-bg, rgba(0, 0, 0, 0.78));
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -1539,7 +1561,7 @@
     .fc-entries-table th {
       padding: 10px 20px;
       text-align: left;
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--glass);
       border-bottom: 1px solid var(--border);
       font-size: 9px;
       font-weight: 800;
@@ -1710,6 +1732,7 @@
     <div class="header-right">
       <div style="font-size:11px;color:var(--muted);font-weight:500">Semana: <strong id="weekLabel"
           style="color:var(--accent2)"></strong></div>
+      <button class="btn btn-outline btn-sm" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar Modo Claro / Escuro" style="padding:4px 9px;font-size:13px">🌙</button>
       <div class="user-pill">
         <div class="av" id="avatarInitials">?</div>
         <span id="currentUserLabel">—</span>
@@ -2824,9 +2847,37 @@
     }
 
     /* ════════════════════════════════
+       THEME MANAGEMENT
+    ════════════════════════════════ */
+    function initTheme() {
+      const savedTheme = localStorage.getItem('diag_theme') || 'dark';
+      applyTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('diag_theme', next);
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        const btn = document.getElementById('themeToggleBtn');
+        if (btn) btn.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        const btn = document.getElementById('themeToggleBtn');
+        if (btn) btn.textContent = '🌙';
+      }
+    }
+
+    /* ════════════════════════════════
        STARTUP
     ════════════════════════════════ */
     async function init() {
+      initTheme();
       const start = new Date(); start.setDate(start.getDate() - start.getDay() + 1);
       const end = new Date(start); end.setDate(start.getDate() + 6);
       document.getElementById('weekLabel').textContent = start.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' – ' + end.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
