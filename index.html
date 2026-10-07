@@ -484,6 +484,9 @@ textarea.form-input{resize:vertical;min-height:80px}
     <div class="stat-chip"><div class="stat-dot dot-red"></div><div><div class="stat-label">Pendente</div><div class="stat-value" id="statRed">0</div></div></div>
     <div class="stat-chip"><div class="stat-dot dot-red"></div><div><div class="stat-label">+7d s/ upd.</div><div class="stat-value" id="statStale">0</div></div></div>
     <div style="flex:1;display:flex;justify-content:flex-end;gap:8px;align-items:center">
+      <input type="file" id="fileImportDB" accept=".json" style="display:none" onchange="importDB(event)">
+      <button class="btn btn-outline" onclick="document.getElementById('fileImportDB').click()">📥 Importar DB</button>
+      <button class="btn btn-outline" onclick="exportDB()">💾 Baixar DB</button>
       <button class="btn btn-outline" onclick="openExport()">📤 Exportar</button>
       <button class="btn btn-primary" id="btnAddCompany" onclick="openAdd()">+ Nova Empresa</button>
     </div>
@@ -1367,6 +1370,39 @@ function generateExportText(){
   document.getElementById('exportText').textContent=lines.join('\n');
 }
 function copyExport(){ navigator.clipboard.writeText(document.getElementById('exportText').textContent).then(()=>showToast('✅ Copiado!')); }
+
+function exportDB() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+  const dlAnchorElem = document.createElement('a');
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", "diagnostico_backup_" + new Date().toISOString().slice(0,10) + ".json");
+  dlAnchorElem.click();
+}
+
+function importDB(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const parsed = JSON.parse(evt.target.result);
+      if(parsed && parsed.users && parsed.companies) {
+        if(confirm("Isso vai substituir os dados atuais pelo backup. Deseja continuar?")) {
+          db = parsed;
+          save();
+          showToast('✅ Banco de dados restaurado!');
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      } else {
+        alert("Arquivo JSON inválido para o sistema.");
+      }
+    } catch(err) {
+      alert("Erro ao ler o arquivo: " + err);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = ''; // Reset input
+}
 
 /* ════════════════════════════════
    STARTUP
