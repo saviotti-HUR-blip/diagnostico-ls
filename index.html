@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Semanal — Crédito Cadastro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#03050d; --bg2:#070c18;
+  --surface:#0c1222; --surface2:#111827; --surface3:#16213a;
+  --border:rgba(255,255,255,0.055); --border2:rgba(255,255,255,0.10);
+  --accent:#6366f1; --accent2:#818cf8; --accent3:#a5b4fc;
+  --accent-glow:rgba(99,102,241,0.22); --purple:#a78bfa;
+  --cyan:#22d3ee; --cyan-glow:rgba(34,211,238,0.18);
+  --green:#10b981; --green2:#34d399; --green-glow:rgba(16,185,129,0.18);
+  --yellow:#f59e0b; --yellow2:#fbbf24; --yellow-glow:rgba(245,158,11,0.18);
+  --red:#ef4444; --red2:#f87171; --red-glow:rgba(239,68,68,0.18);
+  --text:#f1f5f9; --text2:#cbd5e1; --text3:#94a3b8; --muted:#475569;
+  --card:rgba(11,19,38,0.85); --glass:rgba(255,255,255,0.03); --glass2:rgba(255,255,255,0.06);
+  --r:14px; --r-sm:9px; --r-xs:6px;
+  --sh:0 4px 24px rgba(0,0,0,0.5); --sh-lg:0 20px 60px rgba(0,0,0,0.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:99px}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(99,102,241,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.025) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0;
+}
+body>*{position:relative;z-index:1}
+
+/* ── HEADER ── */
+.header{
+  background:rgba(7,12,24,0.94);border-bottom:1px solid var(--border);
+  padding:0 36px;display:flex;align-items:center;justify-content:space-between;
+  height:64px;position:sticky;top:0;z-index:200;
+  backdrop-filter:blur(24px) saturate(180%);
+}
+.header-logo{display:flex;align-items:center;gap:14px}
+.logo-icon{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:17px;box-shadow:0 0 20px var(--accent-glow),0 4px 12px rgba(99,102,241,0.3);
+}
+.header-logo h1{font-size:15px;font-weight:800;letter-spacing:-0.4px}
+.header-logo span{font-size:10px;color:var(--muted);display:block;margin-top:1px;letter-spacing:0.5px;font-weight:500}
+.header-right{display:flex;gap:8px;align-items:center}
+.user-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border2);
+  padding:6px 14px;border-radius:99px;font-size:11px;font-weight:600;color:var(--text2);
+}
+.user-pill .av{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:white;flex-shrink:0;
+}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:8px 16px;border-radius:var(--r-xs);border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  transition:all 0.2s ease;letter-spacing:0.2px;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.btn:disabled{opacity:0.35;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7c3aed);color:white;box-shadow:0 2px 16px var(--accent-glow)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px var(--accent-glow)}
+.btn-outline{background:var(--glass2);color:var(--text2);border:1px solid var(--border)}
+.btn-outline:hover:not(:disabled){background:var(--surface2);border-color:rgba(99,102,241,0.35)}
+.btn-danger{background:linear-gradient(135deg,var(--red),#b91c1c);color:white}
+.btn-success{background:linear-gradient(135deg,var(--green),#059669);color:white}
+.btn-ghost{background:transparent;color:var(--muted);padding:5px 10px;border-radius:var(--r-xs)}
+.btn-ghost:hover{color:var(--text2);background:var(--glass2)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-icon{width:30px;height:30px;padding:0;justify-content:center;align-items:center;border-radius:var(--r-xs)}
+
+/* ── APP TABS ── */
+.app-tabs{display:flex;padding:0 36px;gap:2px;background:var(--surface);border-bottom:1px solid var(--border)}
+.app-tab{
+  padding:14px 18px;cursor:pointer;color:var(--muted);
+  font-size:12px;font-weight:600;border-bottom:2px solid transparent;
+  transition:all 0.2s;display:flex;align-items:center;gap:7px;white-space:nowrap;
+}
+.app-tab:hover{color:var(--text2)}
+.app-tab.active{color:var(--accent2);border-color:var(--accent)}
+.app-view{display:none}
+.app-view.active{display:block}
+
+/* ── SUMMARY BAR ── */
+.summary-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:16px 36px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+}
+.stat-chip{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 18px;min-width:120px;transition:all 0.2s;cursor:default;
+}
+.stat-chip:hover{border-color:rgba(99,102,241,0.3);transform:translateY(-1px)}
+.stat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:1px}
+.stat-value{font-size:26px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.dot-blue{background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.dot-green{background:var(--green);box-shadow:0 0 12px var(--green-glow)}
+.dot-yellow{background:var(--yellow);box-shadow:0 0 12px var(--yellow-glow)}
+.dot-red{background:var(--red);box-shadow:0 0 12px var(--red-glow);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── FILTERS ── */
+.filters{
+  padding:12px 36px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  background:rgba(12,18,34,0.6);border-bottom:1px solid var(--border);
+}
+.filter-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+.filter-select,.search-box{
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:7px 12px;border-radius:var(--r-xs);font-size:12px;
+  font-family:'Inter',sans-serif;transition:border-color 0.2s;
+}
+.filter-select:focus,.search-box:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.filter-select{cursor:pointer}
+.search-box{width:220px;cursor:text}
+.search-box::placeholder{color:var(--muted)}
+
+/* ── MAIN ── */
+.main{padding:0 36px 48px}
+
+/* ── MANAGER SECTION ── */
+.manager-section{margin-bottom:40px}
+.manager-header{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:18px;padding:14px 20px;
+  background:linear-gradient(135deg,var(--surface2),var(--surface3));
+  border-radius:var(--r);border:1px solid var(--border2);
+  box-shadow:var(--sh);position:relative;overflow:hidden;
+}
+.manager-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.manager-avatar{
+  width:42px;height:42px;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;flex-shrink:0;letter-spacing:-0.5px;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+.manager-name{font-size:15px;font-weight:800;letter-spacing:-0.4px}
+.manager-sub{font-size:10px;color:var(--muted);margin-top:2px;font-weight:500}
+.mgr-stats{margin-left:auto;display:flex;gap:8px}
+.mgr-stat-pill{
+  display:flex;align-items:center;gap:5px;
+  background:var(--glass2);border:1px solid var(--border);
+  padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;color:var(--text3);
+}
+
+/* ── TYPE GROUP ── */
+.type-group-header{
+  display:flex;align-items:center;gap:8px;
+  margin:18px 0 12px;padding:8px 14px;
+  border-left:3px solid var(--accent);
+  background:linear-gradient(90deg,rgba(99,102,241,0.05),transparent);
+  border-radius:0 var(--r-xs) var(--r-xs) 0;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent2);
+}
+.type-group-header.renov{border-left-color:var(--green);color:var(--green2);background:linear-gradient(90deg,rgba(16,185,129,0.05),transparent)}
+.type-badge{margin-left:auto;font-size:10px;font-weight:700;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.2);color:var(--accent2);padding:2px 10px;border-radius:99px}
+.type-badge.renov{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2);color:var(--green2)}
+
+/* ── CARDS ── */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.company-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;
+  cursor:pointer;transition:all 0.25s ease;
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  backdrop-filter:blur(12px);
+}
+.company-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s}
+.company-card:hover{border-color:rgba(99,102,241,0.35);transform:translateY(-3px);box-shadow:0 16px 48px rgba(99,102,241,0.08)}
+.company-card:hover::before{opacity:1}
+.company-card.stale{border-color:rgba(239,68,68,0.2)}
+.stale-badge{position:absolute;top:10px;right:10px;background:rgba(239,68,68,0.12);color:var(--red2);font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px;border:1px solid rgba(239,68,68,0.25);letter-spacing:0.5px;text-transform:uppercase;animation:blink 2s ease-in-out infinite}
+.card-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:12px}
+.tl{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-green{background:var(--green);box-shadow:0 0 10px rgba(16,185,129,0.6)}
+.tl-yellow{background:var(--yellow);box-shadow:0 0 10px rgba(245,158,11,0.6)}
+.tl-red{background:var(--red);box-shadow:0 0 10px rgba(239,68,68,0.6);animation:blink 2s ease-in-out infinite}
+.company-name{font-size:12px;font-weight:700;line-height:1.4;flex:1;letter-spacing:-0.1px}
+.type-tag{font-size:8px;font-weight:900;padding:2px 7px;border-radius:4px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.8px}
+.tag-prosp{background:rgba(99,102,241,0.12);color:var(--accent2);border:1px solid rgba(99,102,241,0.25)}
+.tag-renov{background:rgba(16,185,129,0.08);color:var(--green2);border:1px solid rgba(16,185,129,0.2)}
+.progress-wrap{margin-bottom:10px}
+.progress-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:500}
+.progress-bar{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(.4,0,.2,1)}
+.pf-green{background:linear-gradient(90deg,var(--green),var(--green2))}
+.pf-yellow{background:linear-gradient(90deg,var(--yellow),var(--yellow2))}
+.pf-red{background:linear-gradient(90deg,var(--red),var(--red2))}
+.pending-docs{font-size:10px;color:var(--red2);background:rgba(239,68,68,0.05);padding:8px 10px;border-radius:var(--r-xs);margin-bottom:10px;border:1px solid rgba(239,68,68,0.1);flex:1}
+.pending-docs strong{color:var(--text2);font-weight:600}
+.pending-docs ul{padding-left:13px;margin-top:3px}
+.pending-docs li{margin-bottom:2px;line-height:1.4}
+.pending-docs.complete{background:rgba(16,185,129,0.05);color:var(--green2);border-color:rgba(16,185,129,0.12)}
+.pipeline-row{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px}
+.pipe-chip{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--muted);cursor:default;text-transform:uppercase;letter-spacing:0.2px}
+.pipe-chip.done{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:var(--green2)}
+.pipe-chip.active{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 2px 8px var(--accent-glow)}
+.closed-stage-label{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.08));border:1px solid rgba(16,185,129,0.25);color:var(--green2);font-size:9px;font-weight:800;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+@keyframes stagePulse{0%,100%{box-shadow:0 2px 14px var(--green-glow),0 0 20px var(--cyan-glow)}50%{box-shadow:0 4px 24px rgba(16,185,129,0.5),0 0 32px rgba(34,211,238,0.4)}}
+.card-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid var(--border)}
+.last-update{font-size:9px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:4px}
+.obs-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.empty-state{text-align:center;padding:80px;color:var(--muted)}
+.empty-state .emoji{font-size:52px;margin-bottom:14px}
+.empty-state p{font-size:13px}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(10px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);width:720px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-lg);transform:translateY(20px) scale(0.97);transition:transform 0.3s cubic-bezier(.16,1,.3,1)}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--surface),var(--surface2));position:relative;overflow:hidden}
+.modal-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.modal-tl{width:16px;height:16px;border-radius:50%;flex-shrink:0}
+.modal-title{flex:1}
+.modal-title h2{font-size:16px;font-weight:800;letter-spacing:-0.4px}
+.modal-title p{font-size:11px;color:var(--muted);margin-top:3px}
+.modal-close{width:28px;height:28px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-xs);cursor:pointer;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{color:var(--text);border-color:rgba(99,102,241,0.35)}
+.modal-body{padding:20px 22px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;align-items:center}
+
+/* ── FORMS ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.form-label{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.form-input,.form-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:var(--r-xs);font-size:12px;font-family:'Inter',sans-serif;transition:all 0.2s}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-select{cursor:pointer}
+textarea.form-input{resize:vertical;min-height:80px}
+
+/* ── CHECKLIST ── */
+.checklist-actions{display:flex;gap:8px;margin-bottom:12px;padding:10px 12px;background:var(--surface2);border-radius:var(--r-xs);border:1px solid var(--border)}
+.section-divider{color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;padding:12px 0 5px;display:flex;align-items:center;gap:8px}
+.section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-xs);margin-bottom:1px;cursor:pointer;transition:all 0.15s}
+.checklist-item:hover{background:var(--surface2)}
+.checklist-item input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--green);flex-shrink:0}
+.checklist-item input[type=checkbox]:disabled{cursor:not-allowed;opacity:0.35}
+.checklist-item label{font-size:12px;cursor:pointer;flex:1;line-height:1.5;color:var(--text2)}
+.checklist-item.checked label{text-decoration:line-through;color:var(--muted)}
+
+/* ── PIPELINE SELECTOR ── */
+.pipeline-selector{display:flex;gap:4px;flex-wrap:wrap}
+.pipe-btn{padding:6px 11px;border-radius:var(--r-xs);border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;transition:all 0.15s}
+.pipe-btn:hover:not(:disabled){border-color:rgba(99,102,241,0.4);color:var(--text2)}
+.pipe-btn.selected{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 2px 10px var(--accent-glow)}
+
+/* ── MODAL TABS ── */
+.tabs{display:flex;gap:2px;margin-bottom:16px;background:var(--surface2);border-radius:var(--r-xs);padding:3px}
+.tab{flex:1;padding:8px;text-align:center;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab.active{background:var(--accent);color:white;box-shadow:0 2px 10px var(--accent-glow)}
+
+/* ── LOGIN ── */
+.login-screen{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(99,102,241,0.08) 0%,transparent 60%),var(--bg);display:flex;align-items:center;justify-content:center;z-index:5000}
+.login-box{background:var(--surface);padding:44px;border-radius:var(--r);border:1px solid var(--border2);width:100%;max-width:400px;box-shadow:var(--sh-lg);text-align:center;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--cyan))}
+.login-logo{font-size:44px;margin-bottom:10px}
+.login-box h2{margin-bottom:4px;font-size:20px;font-weight:800;letter-spacing:-0.4px}
+.login-box .sub{color:var(--muted);font-size:11px;margin-bottom:28px}
+
+/* ── TOASTS ── */
+.toast-container{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:8px;z-index:6000;pointer-events:none}
+.toast{background:var(--surface2);border-left:3px solid var(--accent);color:var(--text);padding:13px 16px;border-radius:var(--r-xs);box-shadow:var(--sh);display:flex;align-items:center;gap:10px;animation:slideIn 0.35s cubic-bezier(.16,1,.3,1);font-size:12px;font-weight:500;pointer-events:all;border:1px solid var(--border2);backdrop-filter:blur(16px)}
+@keyframes slideIn{from{transform:translateX(110px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── USERS TABLE ── */
+.users-table{width:100%;border-collapse:collapse;font-size:12px}
+.users-table th,.users-table td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.users-table th{color:var(--muted);font-weight:800;text-transform:uppercase;font-size:9px;letter-spacing:1px}
+.users-table tr:hover td{background:var(--glass2)}
+.role-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
+.role-admin{background:rgba(99,102,241,0.15);color:var(--accent2);border:1px solid rgba(99,102,241,0.25)}
+.role-manager{background:rgba(245,158,11,0.12);color:var(--yellow2);border:1px solid rgba(245,158,11,0.2)}
+.role-coordinator{background:rgba(16,185,129,0.1);color:var(--green2);border:1px solid rgba(16,185,129,0.18)}
+
+/* ── EXPORT ── */
+.export-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px;margin-top:12px}
+.export-box h3{font-size:11px;font-weight:800;margin-bottom:10px;color:var(--accent2);display:flex;align-items:center;gap:6px}
+.export-text{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xs);padding:13px;font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:300px;overflow-y:auto;font-family:monospace;line-height:1.7}
+
+/* ════════════════════════════
+   PREVISÃO SEMANAL — NOVO MÓDULO
+   ════════════════════════════ */
+
+/* Top bar */
+.fc-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 36px 0;
+}
+.fc-topbar h2{font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.fc-topbar p{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* KPI row */
+.fc-kpi-row{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;padding:20px 36px;
+}
+.fc-kpi{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;
+  display:flex;align-items:center;gap:14px;
+  transition:all 0.2s;cursor:default;
+}
+.fc-kpi:hover{border-color:rgba(99,102,241,0.3);transform:translateY(-2px)}
+.fc-kpi-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.fc-kpi-icon.blue{background:rgba(99,102,241,0.12);box-shadow:0 0 20px var(--accent-glow)}
+.fc-kpi-icon.green{background:rgba(16,185,129,0.1);box-shadow:0 0 20px var(--green-glow)}
+.fc-kpi-icon.yellow{background:rgba(245,158,11,0.1);box-shadow:0 0 20px var(--yellow-glow)}
+.fc-kpi-icon.purple{background:rgba(167,139,250,0.1);box-shadow:0 0 20px rgba(167,139,250,0.2)}
+.fc-kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:2px}
+.fc-kpi-value{font-size:22px;font-weight:900;letter-spacing:-0.5px;line-height:1}
+.fc-kpi-sub{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* Forecast filters */
+.fc-filters{
+  display:flex;gap:8px;padding:0 36px 16px;flex-wrap:wrap;align-items:center;
+}
+
+/* Manager forecast groups */
+.fc-body{padding:0 36px 48px}
+
+.fc-manager-block{
+  margin-bottom:24px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);
+}
+.fc-manager-head{
+  display:flex;align-items:center;gap:14px;padding:14px 20px;
+  background:linear-gradient(135deg,var(--surface2),var(--surface3));
+  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+}
+.fc-manager-head::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.fc-mgr-av{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;box-shadow:0 4px 14px var(--accent-glow)}
+.fc-mgr-name{font-size:14px;font-weight:800;letter-spacing:-0.3px}
+.fc-mgr-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.fc-mgr-total{
+  margin-left:auto;
+  background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(167,139,250,0.1));
+  border:1px solid rgba(99,102,241,0.25);
+  padding:6px 16px;border-radius:99px;
+  font-size:13px;font-weight:900;color:var(--accent2);
+  letter-spacing:-0.3px;
+}
+.fc-mgr-total small{font-size:9px;color:var(--muted);font-weight:600;display:block;text-align:right}
+
+/* Entries table inside block */
+.fc-entries-table{width:100%;border-collapse:collapse}
+.fc-entries-table th{
+  padding:10px 20px;text-align:left;
+  background:rgba(255,255,255,0.02);
+  border-bottom:1px solid var(--border);
+  font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+}
+.fc-entries-table td{padding:12px 20px;border-bottom:1px solid var(--border);vertical-align:middle}
+.fc-entries-table tr:last-child td{border-bottom:none}
+.fc-entries-table tr:hover td{background:var(--glass2)}
+
+.fc-company-name{font-size:13px;font-weight:700;letter-spacing:-0.2px}
+.fc-value-chip{
+  display:inline-flex;align-items:center;
+  background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(34,211,238,0.06));
+  border:1px solid rgba(16,185,129,0.2);
+  color:var(--green2);font-size:13px;font-weight:800;
+  padding:4px 14px;border-radius:99px;letter-spacing:-0.3px;
+}
+.fc-date-text{font-size:11px;color:var(--text3);font-weight:500}
+.fc-no-date{font-size:11px;color:var(--muted);font-style:italic}
+.fc-actions{display:flex;gap:6px}
+
+/* Add row form inside table */
+.fc-empty-block{
+  text-align:center;padding:40px;color:var(--muted);
+  font-size:12px;border-bottom:1px solid var(--border);
+}
+
+/* "Add" button row at end of each manager block */
+.fc-add-row{
+  display:flex;align-items:center;justify-content:center;
+  padding:12px 20px;
+  background:rgba(99,102,241,0.02);
+  border-top:1px solid var(--border);
+}
+
+/* Empty state for whole forecast */
+.fc-global-empty{
+  margin:0 36px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r);text-align:center;padding:80px 40px;
+}
+.fc-global-empty .emoji{font-size:56px;margin-bottom:16px}
+.fc-global-empty p{font-size:14px;color:var(--muted);margin-bottom:20px}
+
+/* week selector */
+.week-selector{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:99px;padding:6px 14px;font-size:11px;font-weight:700;color:var(--text2);
+}
+.week-selector button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:0 2px;transition:color 0.2s;line-height:1}
+.week-selector button:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">📊</div>
+    <h2>Diagnóstico Semanal</h2>
+    <p class="sub">Crédito Cadastro · Controle Interno</p>
+    <form onsubmit="doLogin(event)">
+      <div class="form-group" style="text-align:left">
+        <label class="form-label">E-mail ou Usuário</label>
+        <input type="text" class="form-input" id="loginEmail" required autocomplete="username">
+      </div>
+      <div class="form-group" style="text-align:left">
+        <label class="form-label">Senha</label>
+        <input type="password" class="form-input" id="loginPass" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:14px;padding:12px;justify-content:center;font-size:13px">Entrar →</button>
+      <p id="loginError" style="color:var(--red);font-size:11px;margin-top:10px;display:none">⚠ Credenciais inválidas.</p>
+    </form>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <h1>Diagnóstico Semanal</h1>
+      <span>Crédito Cadastro — Prospecções &amp; Renovações</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div style="font-size:11px;color:var(--muted);font-weight:500">Semana: <strong id="weekLabel" style="color:var(--accent2)"></strong></div>
+    <div class="user-pill">
+      <div class="av" id="avatarInitials">?</div>
+      <span id="currentUserLabel">—</span>
+      <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;margin-left:2px" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+</header>
+
+<!-- APP TABS -->
+<div class="app-tabs">
+  <div class="app-tab active" onclick="switchAppView('dashboard',this)">📋 Kanban</div>
+  <div class="app-tab" onclick="switchAppView('completed',this)">✅ Concluídos</div>
+  <div class="app-tab" onclick="switchAppView('forecast',this)">📅 Previsão Semanal</div>
+  <div class="app-tab" id="tabUsers" onclick="switchAppView('users',this)" style="display:none">👥 Usuários</div>
+</div>
+
+<!-- ═══════ VIEW: DASHBOARD ═══════ -->
+<div class="app-view active" id="view-dashboard">
+  <div class="summary-bar">
+    <div class="stat-chip"><div class="stat-dot dot-blue"></div><div><div class="stat-label">Total Ativo</div><div class="stat-value" id="statTotal">0</div></div></div>
+    <div class="stat-chip"><div class="stat-dot dot-green"></div><div><div class="stat-label">Completos</div><div class="stat-value" id="statGreen">0</div></div></div>
+    <div class="stat-chip"><div class="stat-dot dot-yellow"></div><div><div class="stat-label">Parcial</div><div class="stat-value" id="statYellow">0</div></div></div>
+    <div class="stat-chip"><div class="stat-dot dot-red"></div><div><div class="stat-label">Pendente</div><div class="stat-value" id="statRed">0</div></div></div>
+    <div class="stat-chip"><div class="stat-dot dot-red"></div><div><div class="stat-label">+7d s/ upd.</div><div class="stat-value" id="statStale">0</div></div></div>
+    <div style="flex:1;display:flex;justify-content:flex-end;gap:8px;align-items:center">
+      <button class="btn btn-outline" onclick="openExport()">📤 Exportar</button>
+      <button class="btn btn-primary" id="btnAddCompany" onclick="openAdd()">+ Nova Empresa</button>
+    </div>
+  </div>
+  <div class="filters">
+    <span class="filter-label">Filtrar:</span>
+    <input class="search-box" id="searchBox" placeholder="🔍 Buscar empresa..." oninput="renderDashboard()">
+    <select class="filter-select" id="fManager" onchange="renderDashboard()"><option value="">Todos os gerentes</option></select>
+    <select class="filter-select" id="fType" onchange="renderDashboard()">
+      <option value="">Prospecção + Renovação</option>
+      <option value="Prospecção">Prospecção</option>
+      <option value="Renovação">Renovação</option>
+    </select>
+    <select class="filter-select" id="fStatus" onchange="renderDashboard()">
+      <option value="">Todos os status</option>
+      <option value="green">✅ Completo</option>
+      <option value="yellow">🟡 Parcial</option>
+      <option value="red">🔴 Pendente</option>
+      <option value="stale">⚠ Sem atualização</option>
+    </select>
+  </div>
+  <div class="main" id="mainContent"></div>
+</div>
+
+<!-- ═══════ VIEW: COMPLETED ═══════ -->
+<div class="app-view" id="view-completed">
+  <div class="main" style="padding-top:28px" id="completedContent"></div>
+</div>
+
+<!-- ═══════ VIEW: FORECAST ═══════ -->
+<div class="app-view" id="view-forecast">
+  <div class="fc-topbar">
+    <div>
+      <h2>📅 Previsão de Operação Semanal</h2>
+      <p>Cada gerente registra as empresas e valores previstos para operar na semana</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <!-- Week navigation -->
+      <div class="week-selector">
+        <button onclick="fcChangeWeek(-1)">‹</button>
+        <span id="fcWeekLabel">—</span>
+        <button onclick="fcChangeWeek(+1)">›</button>
+      </div>
+      <button class="btn btn-primary" id="btnAddForecast" onclick="openForecastModal()">+ Adicionar Empresa</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="fc-kpi-row" id="fcKpiRow"></div>
+
+  <!-- Filters -->
+  <div class="fc-filters">
+    <span class="filter-label">Filtrar:</span>
+    <select class="filter-select" id="fcFManager" onchange="renderForecast()"><option value="">Todos os gerentes</option></select>
+  </div>
+
+  <!-- Body -->
+  <div class="fc-body" id="fcBody"></div>
+</div>
+
+<!-- ═══════ VIEW: USERS ═══════ -->
+<div class="app-view" id="view-users">
+  <div class="main" style="padding-top:28px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:18px;align-items:center">
+      <h2 style="font-size:17px;font-weight:800;letter-spacing:-0.4px">Gestão de Usuários</h2>
+      <button class="btn btn-primary" onclick="openAddUser()">+ Novo Usuário</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)">
+      <table class="users-table">
+        <thead><tr><th>Nome</th><th>Email / Login</th><th>Papel</th><th>Porte</th><th>Ações</th></tr></thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     MODALS
+══════════════════════════════ -->
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-tl" id="dTL"></div>
+      <div class="modal-title"><h2 id="dCompanyName"></h2><p id="dCompanyMeta"></p></div>
+      <div class="modal-close" onclick="closeDetail()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="progress-wrap" style="margin-bottom:16px">
+        <div class="progress-label"><span>Documentação</span><span id="dProgressLabel"></span></div>
+        <div class="progress-bar"><div class="progress-fill" id="dProgressFill" style="width:0%"></div></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Status no Pipeline <span id="pipeWarning" style="color:var(--yellow);font-weight:400;text-transform:none;display:none">(somente Admin)</span></div>
+        <div class="pipeline-selector" id="dPipeline"></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" id="tab1" onclick="switchTab(1)">📋 Documentos</div>
+        <div class="tab" id="tab2" onclick="switchTab(2)">💬 Observações</div>
+      </div>
+      <div id="tabContent1">
+        <div class="checklist-actions" id="checklistActions" style="display:none">
+          <button class="btn btn-outline btn-sm" onclick="selectAll(true)">☑ Marcar Todos</button>
+          <button class="btn btn-outline btn-sm" onclick="selectAll(false)">☐ Desmarcar Todos</button>
+        </div>
+        <div id="dChecklist"></div>
+      </div>
+      <div id="tabContent2" style="display:none">
+        <div class="form-group">
+          <div class="form-label">Observações</div>
+          <textarea class="form-input" id="dObs" rows="5" placeholder="Observações, pendências, contatos..."></textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Data Prevista de Conclusão</div>
+          <input type="date" class="form-input" id="dDeadline">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="btnDeleteCompany" onclick="deleteCompany()">🗑 Excluir</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline" onclick="closeDetail()">Cancelar</button>
+      <button class="btn btn-success" onclick="saveDetail()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD COMPANY MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><div class="modal-title"><h2>➕ Nova Empresa</h2></div><div class="modal-close" onclick="closeAdd()">✕</div></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Nome da Empresa *</div><input class="form-input" id="aName" placeholder="Ex: EMPRESA XYZ LTDA"></div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Gerente *</div><select class="form-select" id="aManager"></select></div>
+        <div class="form-group"><div class="form-label">Tipo *</div><select class="form-select" id="aType"><option value="Prospecção">Prospecção</option><option value="Renovação">Renovação</option></select></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Status Inicial no Pipeline</div>
+        <select class="form-select" id="aPipeline">
+          <option value="Triagem">Triagem</option><option value="Elaboração">Elaboração</option>
+          <option value="Revisão">Revisão</option><option value="Comitê">Comitê</option>
+          <option value="Finalização(ata)">Finalização(ata)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeAdd()">Cancelar</button><button class="btn btn-primary" onclick="addCompany()">Adicionar</button></div>
+  </div>
+</div>
+
+<!-- FORECAST ADD/EDIT MODAL -->
+<div class="modal-overlay" id="forecastModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title"><h2 id="fcModalTitle">📅 Adicionar Previsão</h2><p id="fcModalSub">Registre uma operação prevista para esta semana</p></div>
+      <div class="modal-close" onclick="closeForecastModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="fcEntryId">
+      <div class="form-group" id="fcManagerGroup" style="display:none">
+        <div class="form-label">Gerente *</div>
+        <select class="form-select" id="fcEntryManager"></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Nome da Empresa *</div>
+        <input class="form-input" id="fcEntryCompany" placeholder="Ex: EMPRESA XYZ LTDA" style="text-transform:uppercase">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Valor Previsto (R$) *</div>
+          <input class="form-input" id="fcEntryValue" type="text" placeholder="Ex: 500.000,00" oninput="maskCurrency(this)">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Data (opcional)</div>
+          <input class="form-input" id="fcEntryDate" type="date">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Observações (opcional)</div>
+        <textarea class="form-input" id="fcEntryObs" rows="3" placeholder="Condições, tipo de operação, detalhes..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="btnDeleteFcEntry" onclick="deleteForecastEntry()" style="display:none">🗑 Excluir</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline" onclick="closeForecastModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveForecastEntry()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><div class="modal-title"><h2 id="uModalTitle">Novo Usuário</h2></div><div class="modal-close" onclick="closeUserModal()">✕</div></div>
+    <div class="modal-body">
+      <input type="hidden" id="uId">
+      <div class="form-group"><div class="form-label">Nome *</div><input class="form-input" id="uName"></div>
+      <div class="form-group"><div class="form-label">E-mail (Login) *</div><input class="form-input" id="uEmail"></div>
+      <div class="form-group"><div class="form-label">Senha *</div><input class="form-input" type="password" id="uPass"></div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Papel *</div><select class="form-select" id="uRole"><option value="manager">Gerente</option><option value="coordinator">Coordenador</option><option value="admin">Administrador</option></select></div>
+        <div class="form-group"><div class="form-label">Porte</div><select class="form-select" id="uPorte"><option value="">N/A</option><option value="small">Small</option><option value="middle">Middle</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="btnDeleteUser" onclick="deleteUser()" style="display:none">Excluir</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal" style="max-width:660px">
+    <div class="modal-header"><div class="modal-title"><h2>📤 Exportar Diagnóstico</h2><p>Resumo semanal para WhatsApp / E-mail</p></div><div class="modal-close" onclick="closeExport()">✕</div></div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:0"><div class="form-label">Escopo:</div><select class="form-select" id="exportScope" onchange="generateExportText()"></select></div>
+      <div class="export-box"><h3>📋 Resumo</h3><pre class="export-text" id="exportText"></pre><button class="btn btn-primary" style="margin-top:10px" onclick="copyExport()">📋 Copiar</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════
+   CONFIG
+════════════════════════════════ */
+const PIPELINE_STEPS = ['Triagem','Elaboração','Revisão','Comitê','Finalização(ata)','Aprovado','Reprovado','Pendencias de homologação','Contrato liberado','Ativado'];
+const COMPLETED_STATUSES = ['Reprovado','Ativado'];
+
+const DOCS_PROSP = [
+  {section:'GERAL',items:['Relatório de Visita + Pleito (QProf)','Contrato Social / Última Alteração (S/A: Estatuto + Ata; S/A Fechada: Subscrição)']},
+  {section:'CRÉDITO | AVALIAÇÃO DO CEDENTE',items:['Faturamento dos últimos 24 meses (último até 60 dias; assinado e datado)','Endividamento FIDC/Bancário atualizado, assinado e com data (máximo 60 dias)','(Se RJ): Plano de Recuperação, Quadro de Credores e QMA','(Opcional/Clean): Curva ABC de Clientes/Fornecedores','(Opcional/clean): IRPF dos sócios e avalistas','Balanço e DRE 2025']},
+  {section:'CADASTRO | PÓS-APROVAÇÃO',items:['Certidão simplificada - últimos 90 dias (se alteração > 3 anos)','Certidão de casamento dos representantes da empresa','Procuração (se aplicável)','RG e CPF dos sócios, administradores, procuradores e diretores','Salvar tudo na pasta do servidor e sinalizar por e-mail']}
+];
+const DOCS_RENOV = [
+  {section:'RENOVAÇÃO',items:['Relatório de visita + pleito inserido no sistema (em caso de alteração de parâmetros)','Última alteração contratual disponível','IRPF 2025/26','Balanço e DRE 2024','Balanço e DRE 2025','Balancete e DRE 2026','Endividamento bancário atualizado e assinado (máximo 30 dias de data base)','Faturamento 2025 completo','Faturamento 2026 (máximo de 30 dias de data base)']}
+];
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+let db = {companies:[],users:[],forecasts:[]};
+let currentUser = null;
+let currentCompanyId = null;
+let currentView = 'dashboard';
+
+// Forecast week offset (0 = current week)
+let fcWeekOffset = 0;
+
+/* ════════════════════════════════
+   PERSISTENCE
+════════════════════════════════ */
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).substr(2); }
+
+function load(){
+  const raw = localStorage.getItem('diagdb2');
+  if(raw) db = JSON.parse(raw);
+  if(!db.users||db.users.length===0){
+    db.users=[
+      {id:uid(),name:'Admin',email:'admin',password:'123',role:'admin',porte:''},
+      {id:uid(),name:'Ana Carolina',email:'anacarolina',password:'123',role:'manager',porte:'small'},
+      {id:uid(),name:'Thais',email:'thais',password:'123',role:'manager',porte:'middle'},
+      {id:uid(),name:'Antonio',email:'antonio',password:'123',role:'manager',porte:'small'},
+      {id:uid(),name:'Claudia',email:'claudia',password:'123',role:'manager',porte:'middle'},
+      {id:uid(),name:'Maria Eduarda',email:'mariaeduarda',password:'123',role:'manager',porte:'small'},
+      {id:uid(),name:'Sigrid',email:'sigrid',password:'123',role:'manager',porte:'middle'},
+      {id:uid(),name:'Coord Small',email:'coordsmall',password:'123',role:'coordinator',porte:'small'},
+      {id:uid(),name:'Coord Middle',email:'coordmiddle',password:'123',role:'coordinator',porte:'middle'},
+    ];
+  }
+  if(!db.companies) db.companies=[];
+  if(!db.forecasts) db.forecasts=[];   // ← independent from companies
+}
+function save(){ localStorage.setItem('diagdb2',JSON.stringify(db)); }
+
+/* ════════════════════════════════
+   AUTH
+════════════════════════════════ */
+function doLogin(e){
+  e.preventDefault();
+  const em=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pa=document.getElementById('loginPass').value;
+  const u=db.users.find(x=>x.email.toLowerCase()===em&&x.password===pa);
+  if(u){ sessionStorage.setItem('diagUser',JSON.stringify(u)); window.location.reload(); }
+  else { document.getElementById('loginError').style.display='block'; }
+}
+function doLogout(){ sessionStorage.removeItem('diagUser'); window.location.reload(); }
+
+function checkAuth(){
+  const saved=sessionStorage.getItem('diagUser');
+  if(saved){
+    const parsed=JSON.parse(saved);
+    currentUser=db.users.find(x=>x.id===parsed.id)||parsed;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('currentUserLabel').textContent=currentUser.name;
+    const initials=currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('avatarInitials').textContent=initials;
+    if(currentUser.role==='admin'){
+      document.getElementById('tabUsers').style.display='flex';
+      document.getElementById('btnAddCompany').style.display='inline-flex';
+    } else {
+      document.getElementById('btnAddCompany').style.display='none';
+    }
+    window.addEventListener('storage',handleStorageEvent);
+    return true;
+  }
+  return false;
+}
+
+/* ════════════════════════════════
+   NOTIFICATIONS
+════════════════════════════════ */
+function notifyAction(msg){ localStorage.setItem('diag_notify',JSON.stringify({msg,ts:Date.now()})); }
+function handleStorageEvent(e){
+  if(e.key==='diag_notify'&&e.newValue){ const d=JSON.parse(e.newValue); showToast('🔔 '+d.msg); load(); renderCurrentView(); }
+  else if(e.key==='diagdb2'){ load(); renderCurrentView(); }
+}
+function showToast(msg){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg; c.appendChild(t);
+  setTimeout(()=>{ t.style.opacity=0; setTimeout(()=>t.remove(),400); },5000);
+}
+
+/* ════════════════════════════════
+   PERMISSIONS
+════════════════════════════════ */
+function getVisibleManagers(){
+  if(currentUser.role==='admin') return db.users.filter(u=>u.role==='manager').map(u=>u.name);
+  if(currentUser.role==='manager') return [currentUser.name];
+  if(currentUser.role==='coordinator') return db.users.filter(u=>u.role==='manager'&&u.porte===currentUser.porte).map(u=>u.name).concat([currentUser.name]);
+  return [];
+}
+function isAdmin(){ return currentUser.role==='admin'; }
+// Can see ALL forecast entries (admin or coordinator)
+function canSeeAllForecast(){ return currentUser.role==='admin'||currentUser.role==='coordinator'; }
+// Can add/edit/delete a forecast entry
+function canEditForecastEntry(entry){ return isAdmin()||(currentUser.role==='manager'&&entry.manager===currentUser.name); }
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+function getProgress(c){ const docs=c.type==='Prospecção'?DOCS_PROSP:DOCS_RENOV; const total=docs.reduce((s,g)=>s+g.items.length,0); const checked=(c.checklist||[]).filter(Boolean).length; return {pct:total>0?Math.round(checked/total*100):0,checked,total}; }
+function getPendingDocsList(c){ const docs=c.type==='Prospecção'?DOCS_PROSP:DOCS_RENOV; let pendings=[]; let idx=0; docs.forEach(g=>g.items.forEach(item=>{ if(!c.checklist||!c.checklist[idx]) pendings.push(item); idx++; })); return pendings; }
+function getColor(c){ const {pct}=getProgress(c); if(pct>=100)return 'green'; if(pct>=50)return 'yellow'; return 'red'; }
+function isStale(c){ if(!c.updatedAt)return true; return(Date.now()-new Date(c.updatedAt).getTime())/86400000>7; }
+function formatDate(iso){ if(!iso)return 'Nunca'; const d=new Date(iso); return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function formatDateShort(iso){ if(!iso)return '—'; return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
+function getPipelineIndex(c){ return PIPELINE_STEPS.indexOf(c.pipeline||'Triagem'); }
+
+// Currency mask
+function maskCurrency(el){
+  let v=el.value.replace(/\D/g,'');
+  if(!v){ el.value=''; return; }
+  v=parseInt(v,10)/100;
+  el.value=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function parseCurrency(str){ if(!str)return 0; return parseFloat(str.replace(/\./g,'').replace(',','.'))||0; }
+function formatCurrency(n){ return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// Week helpers
+function getWeekRange(offset=0){
+  const now=new Date();
+  now.setDate(now.getDate()+offset*7);
+  const mon=new Date(now); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
+  return {mon,sun};
+}
+function getWeekKey(offset=0){
+  const {mon}=getWeekRange(offset);
+  return mon.toISOString().slice(0,10); // YYYY-MM-DD of monday
+}
+function weekLabel(offset=0){
+  const {mon,sun}=getWeekRange(offset);
+  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const suffix=offset===0?' (Atual)':offset===1?' (Próxima)':offset===-1?' (Anterior)':'';
+  return `${fmt(mon)} – ${fmt(sun)}${suffix}`;
+}
+
+/* ════════════════════════════════
+   VIEW SWITCHING
+════════════════════════════════ */
+function switchAppView(view,tabEl){
+  document.querySelectorAll('.app-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.querySelectorAll('.app-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  currentView=view;
+  renderCurrentView();
+}
+function renderCurrentView(){
+  if(currentView==='dashboard') renderDashboard();
+  if(currentView==='completed') renderCompleted();
+  if(currentView==='forecast') renderForecast();
+  if(currentView==='users') renderUsers();
+}
+
+/* ════════════════════════════════
+   DASHBOARD
+════════════════════════════════ */
+function renderDashboard(){
+  const mgrs=getVisibleManagers();
+  const fMgrSel=document.getElementById('fManager');
+  if(fMgrSel.options.length<=1) fMgrSel.innerHTML='<option value="">Todos os gerentes</option>'+mgrs.map(m=>`<option value="${m}">${m}</option>`).join('');
+  const search=document.getElementById('searchBox').value.toLowerCase();
+  const fMgr=fMgrSel.value, fType=document.getElementById('fType').value, fStatus=document.getElementById('fStatus').value;
+
+  let activeComps=db.companies.filter(c=>!COMPLETED_STATUSES.includes(c.pipeline)&&mgrs.includes(c.manager));
+  document.getElementById('statTotal').textContent=activeComps.length;
+  document.getElementById('statGreen').textContent=activeComps.filter(c=>getColor(c)==='green').length;
+  document.getElementById('statYellow').textContent=activeComps.filter(c=>getColor(c)==='yellow').length;
+  document.getElementById('statRed').textContent=activeComps.filter(c=>getColor(c)==='red').length;
+  document.getElementById('statStale').textContent=activeComps.filter(c=>isStale(c)).length;
+
+  let filtered=activeComps.filter(c=>{
+    if(search&&!c.name.toLowerCase().includes(search)) return false;
+    if(fMgr&&c.manager!==fMgr) return false;
+    if(fType&&c.type!==fType) return false;
+    if(fStatus==='green'&&getColor(c)!=='green') return false;
+    if(fStatus==='yellow'&&getColor(c)!=='yellow') return false;
+    if(fStatus==='red'&&getColor(c)!=='red') return false;
+    if(fStatus==='stale'&&!isStale(c)) return false;
+    return true;
+  });
+  drawGrid(filtered,document.getElementById('mainContent'),false);
+}
+
+function renderCompleted(){
+  const mgrs=getVisibleManagers();
+  drawGrid(db.companies.filter(c=>COMPLETED_STATUSES.includes(c.pipeline)&&mgrs.includes(c.manager)),document.getElementById('completedContent'),true);
+}
+
+function drawGrid(list,container,isClosed){
+  if(list.length===0){ container.innerHTML=`<div class="empty-state"><div class="emoji">📋</div><p>Nenhuma empresa encontrada.</p></div>`; return; }
+  const byManager={};
+  list.forEach(c=>{ if(!byManager[c.manager])byManager[c.manager]=[]; byManager[c.manager].push(c); });
+  container.innerHTML='';
+  Object.entries(byManager).sort().forEach(([mgr,companies])=>{
+    const prosp=companies.filter(c=>c.type==='Prospecção').sort((a,b)=>getPipelineIndex(a)-getPipelineIndex(b));
+    const renov=companies.filter(c=>c.type==='Renovação').sort((a,b)=>getPipelineIndex(a)-getPipelineIndex(b));
+    const sec=document.createElement('div'); sec.className='manager-section';
+    sec.innerHTML=`
+      <div class="manager-header">
+        <div class="manager-avatar">${mgr.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+        <div><div class="manager-name">${mgr}</div><div class="manager-sub">${companies.length} empresa(s) · ${prosp.length} prosp · ${renov.length} renov</div></div>
+        <div class="mgr-stats">
+          <div class="mgr-stat-pill">✅ ${companies.filter(c=>getColor(c)==='green').length}</div>
+          <div class="mgr-stat-pill">🟡 ${companies.filter(c=>getColor(c)==='yellow').length}</div>
+          <div class="mgr-stat-pill">🔴 ${companies.filter(c=>getColor(c)==='red').length}</div>
+        </div>
+      </div>`;
+    if(prosp.length>0){
+      sec.innerHTML+=`<div class="type-group-header"><span>🎯</span> Prospecção <span class="type-badge">${prosp.length}</span></div>`;
+      const g=document.createElement('div'); g.className='company-grid';
+      prosp.forEach(c=>g.innerHTML+=renderCard(c,isClosed)); sec.appendChild(g);
+    }
+    if(renov.length>0){
+      sec.innerHTML+=`<div class="type-group-header renov"><span>🔄</span> Renovação <span class="type-badge renov">${renov.length}</span></div>`;
+      const g=document.createElement('div'); g.className='company-grid';
+      renov.forEach(c=>g.innerHTML+=renderCard(c,isClosed)); sec.appendChild(g);
+    }
+    container.appendChild(sec);
+  });
+}
+
+function renderCard(c,isClosed){
+  const prog=getProgress(c); const color=getColor(c); const stale=isStale(c);
+  const pipeIdx=getPipelineIndex(c);
+  let pipeHtml='';
+  if(isClosed){
+    pipeHtml=`<div class="closed-stage-label">📌 Etapa Final: ${c.pipeline}</div>`;
+  } else {
+    pipeHtml='<div class="pipeline-row">'+PIPELINE_STEPS.map((s,i)=>{
+      if(COMPLETED_STATUSES.includes(s)&&c.pipeline!==s) return '';
+      const cls=i<pipeIdx?'done':i===pipeIdx?'active':'';
+      const lbl=s.length>13?s.slice(0,12)+'…':s;
+      return `<span class="pipe-chip ${cls}">${lbl}</span>`;
+    }).join('')+'</div>';
+  }
+  const pendings=getPendingDocsList(c);
+  const pendHtml=pendings.length>0
+    ?`<div class="pending-docs"><strong>📄 Pendentes (${pendings.length}):</strong><ul>${pendings.slice(0,2).map(p=>`<li>${p}</li>`).join('')}${pendings.length>2?`<li style="color:var(--muted)">+ ${pendings.length-2} itens...</li>`:''}</ul></div>`
+    :`<div class="pending-docs complete">✅ Documentação completa</div>`;
+  return `
+    <div class="company-card${stale?' stale':''}" onclick="openDetail('${c.id}')">
+      ${stale?'<div class="stale-badge">⚠ Sem atualização</div>':''}
+      <div class="card-top">
+        <div class="tl tl-${color}"></div>
+        <div class="company-name">${c.name}</div>
+        <span class="type-tag tag-${c.type==='Prospecção'?'prosp':'renov'}">${c.type==='Prospecção'?'PROSP':'RENOV'}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Docs</span><span>${prog.checked}/${prog.total}</span></div>
+        <div class="progress-bar"><div class="progress-fill pf-${color}" style="width:${prog.pct}%"></div></div>
+      </div>
+      ${pendHtml}
+      ${pipeHtml}
+      <div class="card-bottom">
+        <span class="last-update">🕐 ${formatDate(c.updatedAt)}</span>
+        ${c.deadline?`<span style="font-size:9px;color:var(--yellow2)">📅 ${formatDateShort(c.deadline)}</span>`:''}
+        ${c.obs?'<div class="obs-dot" title="Tem observações"></div>':''}
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════
+   FORECAST — INDEPENDENT MODULE
+════════════════════════════════ */
+
+function fcChangeWeek(delta){
+  fcWeekOffset+=delta;
+  renderForecast();
+}
+
+function renderForecast(){
+  // Update week label in navigator
+  document.getElementById('fcWeekLabel').textContent=weekLabel(fcWeekOffset);
+
+  const wKey=getWeekKey(fcWeekOffset);
+  const mgrs=getVisibleManagers();
+
+  // Populate manager filter
+  const fcMgrSel=document.getElementById('fcFManager');
+  if(fcMgrSel.options.length<=1){
+    const allFcMgrs=canSeeAllForecast()
+      ? db.users.filter(u=>u.role==='manager').map(u=>u.name)
+      : [currentUser.name];
+    fcMgrSel.innerHTML='<option value="">Todos os gerentes</option>'+allFcMgrs.map(m=>`<option value="${m}">${m}</option>`).join('');
+  }
+  const filterMgr=fcMgrSel.value;
+
+  // Get entries for this week visible to current user
+  let entries=db.forecasts.filter(e=>e.weekKey===wKey);
+  if(!canSeeAllForecast()) entries=entries.filter(e=>e.manager===currentUser.name);
+  if(filterMgr) entries=entries.filter(e=>e.manager===filterMgr);
+
+  // KPIs
+  const allWeekEntries=db.forecasts.filter(e=>e.weekKey===wKey&&(canSeeAllForecast()||e.manager===currentUser.name));
+  const totalVal=allWeekEntries.reduce((s,e)=>s+e.value,0);
+  const uniqueMgrs=[...new Set(allWeekEntries.map(e=>e.manager))];
+  document.getElementById('fcKpiRow').innerHTML=`
+    <div class="fc-kpi"><div class="fc-kpi-icon blue">💰</div><div><div class="fc-kpi-label">Volume Total Previsto</div><div class="fc-kpi-value" style="font-size:17px;color:var(--green2)">R$ ${formatCurrency(totalVal)}</div></div></div>
+    <div class="fc-kpi"><div class="fc-kpi-icon purple">🏢</div><div><div class="fc-kpi-label">Empresas Registradas</div><div class="fc-kpi-value">${allWeekEntries.length}</div></div></div>
+    <div class="fc-kpi"><div class="fc-kpi-icon green">👤</div><div><div class="fc-kpi-label">Gerentes com Previsão</div><div class="fc-kpi-value">${uniqueMgrs.length}</div></div></div>
+    <div class="fc-kpi"><div class="fc-kpi-icon yellow">📅</div><div><div class="fc-kpi-label">Semana</div><div class="fc-kpi-value" style="font-size:13px;letter-spacing:-0.5px">${weekLabel(fcWeekOffset).replace(' (Atual)','').replace(' (Próxima)','').replace(' (Anterior)','')}</div></div></div>
+  `;
+
+  const body=document.getElementById('fcBody');
+
+  if(entries.length===0 && allWeekEntries.length===0){
+    body.innerHTML=`<div class="fc-global-empty"><div class="emoji">📋</div><p>Nenhuma previsão registrada para ${weekLabel(fcWeekOffset)}.</p><button class="btn btn-primary" onclick="openForecastModal()">+ Adicionar primeira previsão</button></div>`;
+    return;
+  }
+
+  // Group by manager
+  const byMgr={};
+  entries.forEach(e=>{ if(!byMgr[e.manager])byMgr[e.manager]=[]; byMgr[e.manager].push(e); });
+
+  // If manager and no entries yet, show their own empty block
+  if(!canSeeAllForecast()&&currentUser.role==='manager'&&!byMgr[currentUser.name]) byMgr[currentUser.name]=[];
+
+  if(Object.keys(byMgr).length===0){
+    body.innerHTML=`<div class="fc-global-empty"><div class="emoji">🔍</div><p>Nenhum resultado para o filtro selecionado.</p></div>`;
+    return;
+  }
+
+  body.innerHTML='';
+  Object.entries(byMgr).sort().forEach(([mgr,mgrEntries])=>{
+    const mgrTotal=mgrEntries.reduce((s,e)=>s+e.value,0);
+    const canAdd=isAdmin()||(currentUser.role==='manager'&&mgr===currentUser.name);
+    const block=document.createElement('div'); block.className='fc-manager-block';
+    block.innerHTML=`
+      <div class="fc-manager-head">
+        <div class="fc-mgr-av">${mgr.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+        <div>
+          <div class="fc-mgr-name">${mgr}</div>
+          <div class="fc-mgr-sub">${mgrEntries.length} empresa(s) prevista(s)</div>
+        </div>
+        <div class="fc-mgr-total">
+          R$ ${formatCurrency(mgrTotal)}
+          <small>volume semanal</small>
+        </div>
+      </div>`;
+
+    if(mgrEntries.length===0){
+      block.innerHTML+=`<div class="fc-empty-block">Nenhuma empresa adicionada ainda.</div>`;
+    } else {
+      const tbl=document.createElement('table'); tbl.className='fc-entries-table';
+      tbl.innerHTML=`<thead><tr><th>Empresa</th><th>Valor Previsto</th><th>Data</th><th>Observações</th><th></th></tr></thead>`;
+      const tbody=document.createElement('tbody');
+      mgrEntries.sort((a,b)=>b.value-a.value).forEach(entry=>{
+        const canEdit=isAdmin()||(currentUser.role==='manager'&&entry.manager===currentUser.name);
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td><div class="fc-company-name">${entry.company}</div></td>
+          <td><span class="fc-value-chip">R$ ${formatCurrency(entry.value)}</span></td>
+          <td>${entry.date?`<span class="fc-date-text">📅 ${new Date(entry.date+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</span>`:`<span class="fc-no-date">—</span>`}</td>
+          <td><span style="font-size:11px;color:var(--text3);max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(entry.obs||'').replace(/"/g,'&quot;')}">${entry.obs||'—'}</span></td>
+          <td class="fc-actions">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openForecastModal('${entry.id}')">✏️ Editar</button>`:''}</td>`;
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      block.appendChild(tbl);
+    }
+
+    if(canAdd){
+      const addRow=document.createElement('div'); addRow.className='fc-add-row';
+      addRow.innerHTML=`<button class="btn btn-outline btn-sm" onclick="openForecastModal(null,'${mgr}')">+ Adicionar empresa para ${mgr.split(' ')[0]}</button>`;
+      block.appendChild(addRow);
+    }
+    body.appendChild(block);
+  });
+}
+
+/* ── Forecast Modal ── */
+function openForecastModal(entryId=null, presetManager=null){
+  const isEdit=!!entryId;
+  const entry=isEdit?db.forecasts.find(e=>e.id===entryId):null;
+  document.getElementById('fcEntryId').value=entryId||'';
+  document.getElementById('fcModalTitle').textContent=isEdit?'✏️ Editar Previsão':'📅 Adicionar Previsão';
+  document.getElementById('fcModalSub').textContent=isEdit?'Atualize os dados da operação':'Registre uma operação prevista para esta semana';
+
+  // Manager field: show only for admin
+  const mgrGroup=document.getElementById('fcManagerGroup');
+  const mgrSel=document.getElementById('fcEntryManager');
+  if(isAdmin()){
+    mgrGroup.style.display='block';
+    const mgrs=db.users.filter(u=>u.role==='manager').map(u=>u.name).sort();
+    mgrSel.innerHTML=mgrs.map(m=>`<option value="${m}">${m}</option>`).join('');
+    if(entry) mgrSel.value=entry.manager;
+    else if(presetManager) mgrSel.value=presetManager;
+  } else {
+    mgrGroup.style.display='none';
+  }
+
+  document.getElementById('fcEntryCompany').value=entry?entry.company:'';
+  document.getElementById('fcEntryValue').value=entry?formatCurrency(entry.value):'';
+  document.getElementById('fcEntryDate').value=entry?(entry.date||''):'';
+  document.getElementById('fcEntryObs').value=entry?(entry.obs||''):'';
+  document.getElementById('btnDeleteFcEntry').style.display=isEdit&&canEditForecastEntry(entry)?'inline-flex':'none';
+
+  document.getElementById('forecastModal').classList.add('open');
+}
+
+function closeForecastModal(){ document.getElementById('forecastModal').classList.remove('open'); }
+
+function saveForecastEntry(){
+  const entryId=document.getElementById('fcEntryId').value;
+  const company=document.getElementById('fcEntryCompany').value.trim().toUpperCase();
+  const valueStr=document.getElementById('fcEntryValue').value;
+  const value=parseCurrency(valueStr);
+  const date=document.getElementById('fcEntryDate').value;
+  const obs=document.getElementById('fcEntryObs').value.trim();
+
+  if(!company){ alert('Informe o nome da empresa.'); return; }
+  if(!value||value<=0){ alert('Informe um valor válido.'); return; }
+
+  const manager=isAdmin()
+    ? document.getElementById('fcEntryManager').value
+    : currentUser.name;
+
+  if(!manager){ alert('Selecione o gerente.'); return; }
+
+  const wKey=getWeekKey(fcWeekOffset);
+
+  if(entryId){
+    const entry=db.forecasts.find(e=>e.id===entryId);
+    if(!canEditForecastEntry(entry)){alert('Sem permissão.');return;}
+    Object.assign(entry,{company,value,date,obs,manager,updatedAt:new Date().toISOString()});
+  } else {
+    db.forecasts.push({id:uid(),weekKey:wKey,manager,company,value,date,obs,createdAt:new Date().toISOString()});
+  }
+  save();
+  notifyAction(`${currentUser.name} ${entryId?'atualizou':'adicionou'} previsão: ${company}`);
+  closeForecastModal();
+  renderForecast();
+}
+
+function deleteForecastEntry(){
+  const entryId=document.getElementById('fcEntryId').value;
+  if(!entryId)return;
+  const entry=db.forecasts.find(e=>e.id===entryId);
+  if(!canEditForecastEntry(entry)){alert('Sem permissão.');return;}
+  if(!confirm('Excluir esta previsão?'))return;
+  db.forecasts=db.forecasts.filter(e=>e.id!==entryId);
+  save();
+  closeForecastModal();
+  renderForecast();
+}
+
+/* ════════════════════════════════
+   DETAIL MODAL
+════════════════════════════════ */
+function openDetail(id){
+  currentCompanyId=id;
+  const c=db.companies.find(x=>x.id===id); if(!c)return;
+  document.getElementById('dCompanyName').textContent=c.name;
+  document.getElementById('dCompanyMeta').textContent=`${c.manager} · ${c.type}`;
+  document.getElementById('btnDeleteCompany').style.display=isAdmin()?'inline-flex':'none';
+  document.getElementById('pipeWarning').style.display=isAdmin()?'none':'inline';
+  document.getElementById('checklistActions').style.display=isAdmin()?'flex':'none';
+  const color=getColor(c);
+  document.getElementById('dTL').style.background=color==='green'?'var(--green)':color==='yellow'?'var(--yellow)':'var(--red)';
+  const prog=getProgress(c);
+  document.getElementById('dProgressLabel').textContent=`${prog.pct}% (${prog.checked}/${prog.total})`;
+  const fill=document.getElementById('dProgressFill'); fill.style.width=prog.pct+'%'; fill.className=`progress-fill pf-${color}`;
+  document.getElementById('dPipeline').innerHTML=PIPELINE_STEPS.map(s=>`<button class="pipe-btn${c.pipeline===s?' selected':''}" ${!isAdmin()?'disabled':''} onclick="setPipeline('${s}')">${s}</button>`).join('');
+  renderChecklist(c);
+  document.getElementById('dObs').value=c.obs||'';
+  document.getElementById('dDeadline').value=c.deadline||'';
+  switchTab(1);
+  document.getElementById('detailModal').classList.add('open');
+}
+function setPipeline(step){
+  if(!isAdmin())return;
+  const c=db.companies.find(x=>x.id===currentCompanyId);
+  c.pipeline=step; c.updatedAt=new Date().toISOString();
+  save(); notifyAction(`Admin alterou ${c.name} para ${step}`);
+  document.querySelectorAll('#dPipeline .pipe-btn').forEach(b=>b.classList.toggle('selected',b.textContent===step));
+}
+function renderChecklist(c){
+  const docs=c.type==='Prospecção'?DOCS_PROSP:DOCS_RENOV;
+  const cl=document.getElementById('dChecklist'); cl.innerHTML=''; let idx=0;
+  docs.forEach(group=>{
+    const sec=document.createElement('div'); sec.className='section-divider'; sec.textContent=group.section; cl.appendChild(sec);
+    group.items.forEach(item=>{
+      const i=idx++; const checked=c.checklist&&c.checklist[i];
+      const row=document.createElement('div'); row.className=`checklist-item${checked?' checked':''}`;
+      row.innerHTML=`<input type="checkbox" id="cb_${i}" ${checked?'checked':''} ${!isAdmin()?'disabled':''} onchange="toggleCheck(${i},this.checked)"><label for="cb_${i}">${item}</label>`;
+      cl.appendChild(row);
+    });
+  });
+}
+function toggleCheck(idx,val){
+  if(!isAdmin())return;
+  const c=db.companies.find(x=>x.id===currentCompanyId); if(!c.checklist)c.checklist=[];
+  c.checklist[idx]=val; c.updatedAt=new Date().toISOString();
+  save(); notifyAction(`Admin atualizou checklist de ${c.name}`);
+  refreshProgress(c); document.getElementById('cb_'+idx).parentElement.classList.toggle('checked',val);
+}
+function selectAll(val){
+  if(!isAdmin())return;
+  const c=db.companies.find(x=>x.id===currentCompanyId); if(!c)return;
+  const docs=c.type==='Prospecção'?DOCS_PROSP:DOCS_RENOV;
+  const total=docs.reduce((s,g)=>s+g.items.length,0);
+  c.checklist=[]; for(let i=0;i<total;i++) c.checklist[i]=val;
+  c.updatedAt=new Date().toISOString();
+  save(); notifyAction(`Admin ${val?'marcou':'desmarcou'} todos os docs de ${c.name}`);
+  renderChecklist(c); refreshProgress(c);
+}
+function refreshProgress(c){
+  const prog=getProgress(c); const color=getColor(c);
+  document.getElementById('dProgressLabel').textContent=`${prog.pct}% (${prog.checked}/${prog.total})`;
+  const fill=document.getElementById('dProgressFill'); fill.style.width=prog.pct+'%'; fill.className=`progress-fill pf-${color}`;
+}
+function switchTab(n){
+  document.getElementById('tab1').classList.toggle('active',n===1);
+  document.getElementById('tab2').classList.toggle('active',n===2);
+  document.getElementById('tabContent1').style.display=n===1?'block':'none';
+  document.getElementById('tabContent2').style.display=n===2?'block':'none';
+}
+function saveDetail(){
+  const c=db.companies.find(x=>x.id===currentCompanyId); if(!c)return;
+  const newObs=document.getElementById('dObs').value, newDead=document.getElementById('dDeadline').value;
+  if(c.obs!==newObs||c.deadline!==newDead){
+    c.obs=newObs; c.deadline=newDead; c.updatedAt=new Date().toISOString();
+    save(); notifyAction(`${currentUser.name} atualizou observações em ${c.name}`);
+  }
+  document.getElementById('detailModal').classList.remove('open');
+  renderCurrentView();
+}
+function deleteCompany(){
+  if(!isAdmin())return;
+  if(!confirm('Excluir esta empresa?'))return;
+  const c=db.companies.find(x=>x.id===currentCompanyId);
+  db.companies=db.companies.filter(x=>x.id!==currentCompanyId);
+  save(); notifyAction(`Admin excluiu ${c.name}`);
+  document.getElementById('detailModal').classList.remove('open'); renderCurrentView();
+}
+function closeDetail(){ document.getElementById('detailModal').classList.remove('open'); }
+
+/* ════════════════════════════════
+   ADD COMPANY
+════════════════════════════════ */
+function openAdd(){
+  const mgrs=db.users.filter(u=>u.role==='manager').map(u=>u.name).sort();
+  document.getElementById('aManager').innerHTML='<option value="">Selecione...</option>'+mgrs.map(m=>`<option value="${m}">${m}</option>`).join('');
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAdd(){ document.getElementById('addModal').classList.remove('open'); }
+function addCompany(){
+  const name=document.getElementById('aName').value.trim().toUpperCase();
+  const manager=document.getElementById('aManager').value;
+  if(!name||!manager){ alert('Preencha nome e gerente.'); return; }
+  db.companies.push({id:uid(),name,manager,type:document.getElementById('aType').value,pipeline:document.getElementById('aPipeline').value,checklist:[],obs:'',updatedAt:new Date().toISOString()});
+  save(); notifyAction(`Admin adicionou ${name}`);
+  closeAdd(); document.getElementById('aName').value=''; renderCurrentView();
+}
+
+/* ════════════════════════════════
+   USERS
+════════════════════════════════ */
+function renderUsers(){
+  const rLabel={admin:'Administrador',manager:'Gerente',coordinator:'Coordenador'};
+  const rClass={admin:'role-admin',manager:'role-manager',coordinator:'role-coordinator'};
+  document.getElementById('usersTableBody').innerHTML=db.users.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td style="color:var(--muted);font-size:11px">${u.email}</td>
+      <td><span class="role-badge ${rClass[u.role]||'role-manager'}">${rLabel[u.role]||u.role}</span></td>
+      <td style="color:var(--text3);font-size:11px">${u.porte||'—'}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editUser('${u.id}')">Editar</button></td>
+    </tr>`).join('');
+}
+function openAddUser(){
+  ['uId','uName','uEmail','uPass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('btnDeleteUser').style.display='none';
+  document.getElementById('uModalTitle').textContent='Novo Usuário';
+  document.getElementById('userModal').classList.add('open');
+}
+function editUser(id){
+  const u=db.users.find(x=>x.id===id);
+  document.getElementById('uId').value=u.id; document.getElementById('uName').value=u.name;
+  document.getElementById('uEmail').value=u.email; document.getElementById('uPass').value=u.password;
+  document.getElementById('uRole').value=u.role; document.getElementById('uPorte').value=u.porte||'';
+  document.getElementById('btnDeleteUser').style.display=u.email==='admin'?'none':'inline-flex';
+  document.getElementById('uModalTitle').textContent='Editar Usuário';
+  document.getElementById('userModal').classList.add('open');
+}
+function saveUser(){
+  const id=document.getElementById('uId').value;
+  const name=document.getElementById('uName').value.trim();
+  const email=document.getElementById('uEmail').value.trim().toLowerCase();
+  const password=document.getElementById('uPass').value;
+  const role=document.getElementById('uRole').value;
+  const porte=document.getElementById('uPorte').value;
+  if(!name||!email||!password){ alert('Preencha os campos obrigatórios.'); return; }
+  if(id){ Object.assign(db.users.find(x=>x.id===id),{name,email,password,role,porte}); }
+  else { db.users.push({id:uid(),name,email,password,role,porte}); }
+  save(); renderUsers(); closeUserModal();
+}
+function deleteUser(){
+  if(!confirm('Excluir este usuário?'))return;
+  db.users=db.users.filter(x=>x.id!==document.getElementById('uId').value);
+  save(); renderUsers(); closeUserModal();
+}
+function closeUserModal(){ document.getElementById('userModal').classList.remove('open'); }
+
+/* ════════════════════════════════
+   EXPORT
+════════════════════════════════ */
+function openExport(){
+  const sel=document.getElementById('exportScope'); let opts=[];
+  if(isAdmin()){ opts.push('<option value="ALL">Todos os Gerentes</option>'); db.users.filter(u=>u.role==='manager').forEach(u=>opts.push(`<option value="${u.name}">${u.name}</option>`)); }
+  else if(currentUser.role==='coordinator'){ const mgrs=getVisibleManagers(); opts.push(`<option value="COORD_ALL">Porte ${currentUser.porte}</option>`); mgrs.forEach(m=>opts.push(`<option value="${m}">${m}</option>`)); }
+  else { opts.push(`<option value="${currentUser.name}">${currentUser.name}</option>`); }
+  sel.innerHTML=opts.join(''); generateExportText();
+  document.getElementById('exportModal').classList.add('open');
+}
+function closeExport(){ document.getElementById('exportModal').classList.remove('open'); }
+function generateExportText(){
+  const scope=document.getElementById('exportScope').value;
+  let targetMgrs=[];
+  if(scope==='ALL') targetMgrs=db.users.filter(u=>u.role==='manager').map(u=>u.name);
+  else if(scope==='COORD_ALL') targetMgrs=getVisibleManagers();
+  else targetMgrs=[scope];
+  const now=new Date();
+  const lines=[`🗓 DIAGNÓSTICO SEMANAL — ${now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).toUpperCase()}`,`📊 CRÉDITO CADASTRO`,`${'─'.repeat(50)}`,''];
+  const byMgr={};
+  db.companies.filter(c=>targetMgrs.includes(c.manager)).forEach(c=>{ if(!byMgr[c.manager])byMgr[c.manager]=[]; byMgr[c.manager].push(c); });
+  Object.entries(byMgr).sort().forEach(([mgr,cos])=>{
+    lines.push(`👤 ${mgr.toUpperCase()}`);
+    const prosp=cos.filter(c=>c.type==='Prospecção'); const renov=cos.filter(c=>c.type==='Renovação');
+    if(prosp.length){ lines.push('  🎯 PROSPECÇÃO:'); prosp.forEach(c=>{ const p=getProgress(c); const s=getColor(c)==='green'?'🟢':getColor(c)==='yellow'?'🟡':'🔴'; lines.push(`    ${s} ${c.name}`); lines.push(`       📌 ${c.pipeline||'Triagem'} | Docs: ${p.checked}/${p.total}`); if(c.obs)lines.push(`       💬 ${c.obs.split('\n')[0]}`); }); }
+    if(renov.length){ lines.push('  🔄 RENOVAÇÃO:'); renov.forEach(c=>{ const p=getProgress(c); const s=getColor(c)==='green'?'🟢':getColor(c)==='yellow'?'🟡':'🔴'; lines.push(`    ${s} ${c.name}`); lines.push(`       📌 ${c.pipeline||'Triagem'} | Docs: ${p.checked}/${p.total}`); if(c.obs)lines.push(`       💬 ${c.obs.split('\n')[0]}`); }); }
+    lines.push('');
+  });
+  document.getElementById('exportText').textContent=lines.join('\n');
+}
+function copyExport(){ navigator.clipboard.writeText(document.getElementById('exportText').textContent).then(()=>showToast('✅ Copiado!')); }
+
+/* ════════════════════════════════
+   STARTUP
+════════════════════════════════ */
+function init(){
+  const start=new Date(); start.setDate(start.getDate()-start.getDay()+1);
+  const end=new Date(start); end.setDate(start.getDate()+6);
+  document.getElementById('weekLabel').textContent=start.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' – '+end.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  load();
+  if(checkAuth()) renderCurrentView();
+  document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+    overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+  });
+}
+init();
+</script>
+</body>
+</html>
