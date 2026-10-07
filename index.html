@@ -2111,49 +2111,59 @@
     // Cole suas credenciais aqui
     const SUPABASE_URL = 'https://ifcqipwstbtbtkvnmqpn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmY3FpcHdzdGJ0YnRrdm5tcXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzOTEwNjcsImV4cCI6MjEwNjk2NzA2N30.fnXvsHDlF1i8L_krkVQ2NAsHBD2itbFKu5YC37EoXg0';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
     function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
 
     async function load() {
       try {
-        const { data, error } = await supabase
-          .from('app_state')
-          .select('state')
-          .eq('id', 1)
-          .single();
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('app_state')
+            .select('state')
+            .eq('id', 1)
+            .single();
 
-        if (data && data.state) {
-          db = data.state;
+          if (data && data.state && Object.keys(data.state).length > 0) {
+            db = data.state;
+          }
         }
       } catch (err) {
         console.error("Erro ao carregar do Supabase", err);
       }
 
+      let needSave = false;
       if (!db.users || db.users.length === 0) {
         db.users = [
-          { id: uid(), name: 'Admin', email: 'admin', password: '123', role: 'admin', porte: '' },
-          { id: uid(), name: 'Ana Carolina', email: 'anacarolina', password: '123', role: 'manager', porte: 'small' },
-          { id: uid(), name: 'Thais', email: 'thais', password: '123', role: 'manager', porte: 'middle' },
-          { id: uid(), name: 'Antonio', email: 'antonio', password: '123', role: 'manager', porte: 'small' },
-          { id: uid(), name: 'Claudia', email: 'claudia', password: '123', role: 'manager', porte: 'middle' },
-          { id: uid(), name: 'Maria Eduarda', email: 'mariaeduarda', password: '123', role: 'manager', porte: 'small' },
-          { id: uid(), name: 'Sigrid', email: 'sigrid', password: '123', role: 'manager', porte: 'middle' },
-          { id: uid(), name: 'Coord Small', email: 'coordsmall', password: '123', role: 'coordinator', porte: 'small' },
-          { id: uid(), name: 'Coord Middle', email: 'coordmiddle', password: '123', role: 'coordinator', porte: 'middle' },
+          { id: 'usr_admin', name: 'Admin', email: 'admin', password: '123', role: 'admin', porte: '' },
+          { id: 'usr_anacarolina', name: 'Ana Carolina', email: 'anacarolina', password: '123', role: 'manager', porte: 'small' },
+          { id: 'usr_thais', name: 'Thais', email: 'thais', password: '123', role: 'manager', porte: 'middle' },
+          { id: 'usr_antonio', name: 'Antonio', email: 'antonio', password: '123', role: 'manager', porte: 'small' },
+          { id: 'usr_claudia', name: 'Claudia', email: 'claudia', password: '123', role: 'manager', porte: 'middle' },
+          { id: 'usr_mariaeduarda', name: 'Maria Eduarda', email: 'mariaeduarda', password: '123', role: 'manager', porte: 'small' },
+          { id: 'usr_sigrid', name: 'Sigrid', email: 'sigrid', password: '123', role: 'manager', porte: 'middle' },
+          { id: 'usr_coordsmall', name: 'Coord Small', email: 'coordsmall', password: '123', role: 'coordinator', porte: 'small' },
+          { id: 'usr_coordmiddle', name: 'Coord Middle', email: 'coordmiddle', password: '123', role: 'coordinator', porte: 'middle' },
         ];
+        needSave = true;
       }
-      if (!db.companies) db.companies = [];
-      if (!db.forecasts) db.forecasts = [];
+      if (!db.companies) { db.companies = []; needSave = true; }
+      if (!db.forecasts) { db.forecasts = []; needSave = true; }
+
+      if (needSave) {
+        await save();
+      }
     }
 
     async function save() {
       // Salva no Supabase localmente atualizado
-      const { error } = await supabase
-        .from('app_state')
-        .upsert({ id: 1, state: db });
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from('app_state')
+          .upsert({ id: 1, state: db });
 
-      if (error) console.error("Erro ao salvar no Supabase", error);
+        if (error) console.error("Erro ao salvar no Supabase", error);
+      }
     }
 
     /* ════════════════════════════════
@@ -2164,8 +2174,15 @@
       const em = document.getElementById('loginEmail').value.trim().toLowerCase();
       const pa = document.getElementById('loginPass').value;
       const u = db.users.find(x => x.email.toLowerCase() === em && x.password === pa);
-      if (u) { sessionStorage.setItem('diagUser', JSON.stringify(u)); window.location.reload(); }
-      else { document.getElementById('loginError').style.display = 'block'; }
+      if (u) { 
+        sessionStorage.setItem('diagUser', JSON.stringify(u)); 
+        document.getElementById('loginScreen').style.display = 'none';
+        checkAuth();
+        renderCurrentView();
+        setupRealtime();
+      } else { 
+        document.getElementById('loginError').style.display = 'block'; 
+      }
     }
     function doLogout() { sessionStorage.removeItem('diagUser'); window.location.reload(); }
 
@@ -2197,7 +2214,8 @@
     }
 
     function setupRealtime() {
-      supabase
+      if (!supabaseClient) return;
+      supabaseClient
         .channel('app_state_changes')
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'app_state' }, payload => {
           if (payload.new && payload.new.state) {
