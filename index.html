@@ -7,6 +7,7 @@
   <title>Diagnóstico Semanal — Crédito Cadastro</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --bg: #03050d;
@@ -1688,6 +1689,152 @@
     .week-selector button:hover {
       color: var(--text)
     }
+    /* ── PIPELINE SEMANAL ── */
+    .pl-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 36px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .pl-topbar h2 { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
+    .pl-topbar p { font-size: 11px; color: var(--muted); }
+
+    .pl-manager-block {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      margin-bottom: 24px;
+      box-shadow: var(--sh);
+      overflow: hidden;
+    }
+
+    .pl-manager-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, var(--surface2), var(--surface3));
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .pl-manager-head::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .pl-mgr-av {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; flex-shrink: 0;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+    .pl-mgr-name { font-size: 14px; font-weight: 800; }
+    .pl-mgr-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .pl-mgr-updated {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.5;
+    }
+    .pl-mgr-updated .stale-warn { color: var(--yellow); font-weight: 700; }
+
+    /* KPI Strip */
+    .pl-kpi-row {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .pl-kpi {
+      flex: 1; padding: 12px 18px;
+      border-right: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .pl-kpi:last-child { border-right: none; }
+    .pl-kpi::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+    }
+    .pl-kpi.kpi-cyan::after { background: var(--cyan); }
+    .pl-kpi.kpi-yellow::after { background: var(--yellow); }
+    .pl-kpi.kpi-green::after { background: var(--green); }
+    .pl-kpi.kpi-accent::after { background: var(--accent); }
+
+    /* Accordion sheet cards */
+    .pl-sheets-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+    .pl-sheet-card {
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .pl-sheet-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .pl-sheet-card.open { border-color: rgba(99,102,241,0.35); box-shadow: 0 4px 20px var(--accent-glow); }
+
+    .pl-sheet-trigger {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      cursor: pointer;
+      background: var(--surface2);
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .pl-sheet-trigger:hover { background: var(--surface3); }
+
+    .pl-sheet-emoji {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .pl-sheet-emoji.clr-accent { background: rgba(99,102,241,0.15); box-shadow: 0 0 12px rgba(99,102,241,0.2); }
+    .pl-sheet-emoji.clr-green  { background: rgba(16,185,129,0.15); box-shadow: 0 0 12px rgba(16,185,129,0.2); }
+    .pl-sheet-emoji.clr-yellow { background: rgba(245,158,11,0.15);  box-shadow: 0 0 12px rgba(245,158,11,0.2); }
+    .pl-sheet-emoji.clr-cyan   { background: rgba(34,211,238,0.15);  box-shadow: 0 0 12px rgba(34,211,238,0.2); }
+
+    .pl-sheet-info { flex: 1; min-width: 0; }
+    .pl-sheet-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .pl-sheet-meta { font-size: 10px; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pl-sheet-meta .badge-ok   { color: var(--green2); font-weight: 600; }
+    .pl-sheet-meta .badge-warn { color: var(--yellow2); font-weight: 600; }
+
+    .pl-sheet-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .pl-sheet-chevron { font-size: 13px; color: var(--muted); transition: transform 0.3s ease; width: 20px; text-align: center; }
+    .pl-sheet-card.open .pl-sheet-chevron { transform: rotate(180deg); color: var(--accent2); }
+
+    .pl-sheet-body {
+      display: none;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+    }
+    .pl-sheet-card.open .pl-sheet-body { display: block; animation: slideDown 0.25s ease; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .pl-upload-btn-wrap { padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+    .pl-rows-count { font-size: 10px; color: var(--muted); padding: 6px 12px; border-top: 1px solid var(--border); text-align: right; background: var(--surface); }
+    .pl-empty-sheet { text-align: center; padding: 24px 16px; color: var(--muted); font-size: 11px; }
+
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1747,6 +1894,7 @@
     <div class="app-tab active" onclick="switchAppView('dashboard',this)">📋 Kanban</div>
     <div class="app-tab" onclick="switchAppView('completed',this)">✅ Concluídos</div>
     <div class="app-tab" onclick="switchAppView('forecast',this)">📅 Previsão Semanal</div>
+    <div class="app-tab" id="tabPipeline" onclick="switchAppView('pipeline',this)">📊 Pipeline Semanal</div>
     <div class="app-tab" id="tabUsers" onclick="switchAppView('users',this)" style="display:none">👥 Usuários</div>
   </div>
 
@@ -1857,6 +2005,22 @@
     <div class="fc-body" id="fcBody"></div>
   </div>
 
+  <!-- ═══════ VIEW: PIPELINE SEMANAL ═══════ -->
+  <div class="app-view" id="view-pipeline">
+    <div class="pl-topbar">
+      <div>
+        <h2>📊 Pipeline Semanal</h2>
+        <p>Cada gerente anexa as 4 planilhas semanais. A data de atualização é exibida automaticamente.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <select class="filter-select" id="plFilterManager" onchange="renderPipeline()">
+          <option value="">Todos os gerentes</option>
+        </select>
+      </div>
+    </div>
+    <div id="plBody" style="padding:0 36px 48px"></div>
+  </div>
+
   <!-- ═══════ VIEW: USERS ═══════ -->
   <div class="app-view" id="view-users">
     <div class="main" style="padding-top:28px">
@@ -1872,7 +2036,7 @@
               <th>Nome</th>
               <th>Email / Login</th>
               <th>Papel</th>
-              <th>Porte</th>
+              <th>Coordenadora</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -1970,6 +2134,7 @@
           <div class="form-label">Status Inicial no Pipeline</div>
           <select class="form-select" id="aPipeline">
             <option value="Triagem">Triagem</option>
+            <option value="Triagem Finalizada">Triagem Finalizada</option>
             <option value="Elaboração">Elaboração</option>
             <option value="Revisão">Revisão</option>
             <option value="Comitê">Comitê</option>
@@ -2059,10 +2224,8 @@
             </select>
           </div>
           <div class="form-group">
-            <div class="form-label">Porte</div><select class="form-select" id="uPorte">
+            <div class="form-label">Coordenadora</div><select class="form-select" id="uPorte">
               <option value="">N/A</option>
-              <option value="small">Small</option>
-              <option value="middle">Middle</option>
             </select>
           </div>
         </div>
@@ -2105,7 +2268,7 @@
     /* ════════════════════════════════
        CONFIG
     ════════════════════════════════ */
-    const PIPELINE_STEPS = ['Triagem', 'Elaboração', 'Revisão', 'Comitê', 'Finalização(ata)', 'Aprovado', 'Reprovado', 'Pendencias de homologação', 'Contrato liberado', 'Ativado'];
+    const PIPELINE_STEPS = ['Triagem', 'Triagem Finalizada', 'Elaboração', 'Revisão', 'Comitê', 'Finalização(ata)', 'Aprovado', 'Reprovado', 'Pendencias de homologação', 'Contrato liberado', 'Ativado'];
     const COMPLETED_STATUSES = ['Reprovado', 'Ativado'];
 
     const DOCS_PROSP = [
@@ -2159,19 +2322,24 @@
       if (!db.users || db.users.length === 0) {
         db.users = [
           { id: 'usr_admin', name: 'Admin', email: 'admin', password: '123', role: 'admin', porte: '' },
-          { id: 'usr_anacarolina', name: 'Ana Carolina', email: 'anacarolina', password: '123', role: 'manager', porte: 'small' },
-          { id: 'usr_thais', name: 'Thais', email: 'thais', password: '123', role: 'manager', porte: 'middle' },
-          { id: 'usr_antonio', name: 'Antonio', email: 'antonio', password: '123', role: 'manager', porte: 'small' },
-          { id: 'usr_claudia', name: 'Claudia', email: 'claudia', password: '123', role: 'manager', porte: 'middle' },
-          { id: 'usr_mariaeduarda', name: 'Maria Eduarda', email: 'mariaeduarda', password: '123', role: 'manager', porte: 'small' },
-          { id: 'usr_sigrid', name: 'Sigrid', email: 'sigrid', password: '123', role: 'manager', porte: 'middle' },
-          { id: 'usr_coordsmall', name: 'Coord Small', email: 'coordsmall', password: '123', role: 'coordinator', porte: 'small' },
-          { id: 'usr_coordmiddle', name: 'Coord Middle', email: 'coordmiddle', password: '123', role: 'coordinator', porte: 'middle' },
+          { id: 'usr_anacarolina', name: 'Ana Carolina', email: 'anacarolina', password: '123', role: 'manager', porte: 'Coordenadora 1' },
+          { id: 'usr_thais', name: 'Thais', email: 'thais', password: '123', role: 'manager', porte: 'Coordenadora 2' },
+          { id: 'usr_antonio', name: 'Antonio', email: 'antonio', password: '123', role: 'manager', porte: 'Coordenadora 1' },
+          { id: 'usr_claudia', name: 'Claudia', email: 'claudia', password: '123', role: 'manager', porte: 'Coordenadora 2' },
+          { id: 'usr_mariaeduarda', name: 'Maria Eduarda', email: 'mariaeduarda', password: '123', role: 'manager', porte: 'Coordenadora 1' },
+          { id: 'usr_sigrid', name: 'Sigrid', email: 'sigrid', password: '123', role: 'manager', porte: 'Coordenadora 2' },
+          { id: 'usr_rafaela', name: 'Rafaela', email: 'rafaela', password: '123', role: 'manager', porte: 'Coordenadora 1' },
+          { id: 'usr_daniela', name: 'Daniela', email: 'daniela', password: '123', role: 'manager', porte: 'Coordenadora 1' },
+          { id: 'usr_anatavares', name: 'Ana Tavares', email: 'anatavares', password: '123', role: 'manager', porte: 'Coordenadora 2' },
+          { id: 'usr_veclaine', name: 'Veclaine', email: 'veclaine', password: '123', role: 'manager', porte: 'Coordenadora 2' },
+          { id: 'usr_coordenadora1', name: 'Coordenadora 1', email: 'coordenadora1', password: '123', role: 'coordinator', porte: '' },
+          { id: 'usr_coordenadora2', name: 'Coordenadora 2', email: 'coordenadora2', password: '123', role: 'coordinator', porte: '' },
         ];
         needSave = true;
       }
       if (!db.companies) { db.companies = []; needSave = true; }
       if (!db.forecasts) { db.forecasts = []; needSave = true; }
+      if (!db.pipelineUploads) { db.pipelineUploads = {}; needSave = true; }
 
       if (needSave) {
         await save();
@@ -2224,6 +2392,7 @@
         } else {
           document.getElementById('btnAddCompany').style.display = 'none';
         }
+        document.getElementById('tabPipeline').style.display = 'flex';
         return true;
       }
       return false;
@@ -2262,7 +2431,7 @@
     function getVisibleManagers() {
       if (currentUser.role === 'admin') return db.users.filter(u => u.role === 'manager').map(u => u.name);
       if (currentUser.role === 'manager') return [currentUser.name];
-      if (currentUser.role === 'coordinator') return db.users.filter(u => u.role === 'manager' && u.porte === currentUser.porte).map(u => u.name).concat([currentUser.name]);
+      if (currentUser.role === 'coordinator') return db.users.filter(u => u.role === 'manager' && u.porte === currentUser.name).map(u => u.name).concat([currentUser.name]);
       return [];
     }
     function isAdmin() { return currentUser.role === 'admin'; }
@@ -2326,6 +2495,7 @@
       if (currentView === 'dashboard') renderDashboard();
       if (currentView === 'completed') renderCompleted();
       if (currentView === 'forecast') renderForecast();
+      if (currentView === 'pipeline') renderPipeline();
       if (currentView === 'users') renderUsers();
     }
 
@@ -2435,6 +2605,264 @@
         ${c.obs ? '<div class="obs-dot" title="Tem observações"></div>' : ''}
       </div>
     </div>`;
+    }
+
+    /* ════════════════════════════════
+       PIPELINE SEMANAL — MÓDULO UPLOAD
+    ════════════════════════════════ */
+
+    function populateCoordSelect(selected = '') {
+      const sel = document.getElementById('uPorte');
+      const coords = db.users.filter(u => u.role === 'coordinator').map(u => u.name);
+      sel.innerHTML = '<option value="">N/A</option>' + coords.map(c => `<option value="${c}"${c === selected ? ' selected' : ''}>${c}</option>`).join('');
+    }
+
+    function plIsStale(isoDate) {
+      if (!isoDate) return true;
+      return (Date.now() - new Date(isoDate).getTime()) / 86400000 > 7;
+    }
+
+    function plFormatDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderPipeline() {
+      const mgrs = getVisibleManagers().filter(m => {
+        const u = db.users.find(x => x.name === m);
+        return u && u.role === 'manager';
+      });
+
+      // Populate filter (only rebuild if empty)
+      const plSel = document.getElementById('plFilterManager');
+      if (plSel.options.length <= 1) {
+        plSel.innerHTML = '<option value="">Todos os gerentes</option>' +
+          mgrs.map(m => `<option value="${m}">${m}</option>`).join('');
+      }
+      const fMgr = plSel.value;
+      const visibleMgrs = fMgr ? mgrs.filter(m => m === fMgr) : mgrs;
+
+      const body = document.getElementById('plBody');
+      body.style.paddingTop = '24px';
+      if (visibleMgrs.length === 0) {
+        body.innerHTML = `<div class="pl-empty"><div class="emoji">📋</div><p>Nenhum gerente encontrado.</p></div>`;
+        return;
+      }
+
+      body.innerHTML = '';
+
+      const sheetDefs = [
+        { key: 'pipeline',      label: 'Pipeline',           emoji: '📋', clr: 'clr-accent' },
+        { key: 'tranche',       label: 'Limite de Tranche',  emoji: '💰', clr: 'clr-green'  },
+        { key: 'titulos',       label: 'Títulos a Liquidar', emoji: '📄', clr: 'clr-yellow' },
+        { key: 'trancheStatus', label: 'Tranche por Status', emoji: '🔄', clr: 'clr-cyan'   },
+      ];
+
+      visibleMgrs.forEach(mgr => {
+        const upload = (db.pipelineUploads || {})[mgr] || null;
+        const canUpload = isAdmin() || (currentUser.name === mgr);
+
+        const updAt = upload ? upload.updatedAt : null;
+        const stale = plIsStale(updAt);
+        const updLabel = updAt
+          ? `<span>📅 Atualizado em ${plFormatDate(updAt)}</span>${stale ? '<br><span class="stale-warn">⚠ Desatualizado (+7 dias)</span>' : ''}`
+          : '<span class="stale-warn">⚠ Nenhuma planilha enviada ainda</span>';
+
+        const block = document.createElement('div');
+        block.className = 'pl-manager-block';
+
+        // ── Header ──
+        block.innerHTML = `
+      <div class="pl-manager-head">
+        <div class="pl-mgr-av">${mgr.split(' ').map(w => w[0]).join('').slice(0, 2)}</div>
+        <div>
+          <div class="pl-mgr-name">${mgr}</div>
+          <div class="pl-mgr-sub">Pipeline semanal — clique nos cards para expandir</div>
+        </div>
+        <div class="pl-mgr-updated">${updLabel}</div>
+      </div>`;
+
+        // ── KPI strip ──
+        if (upload && upload.sheets) {
+          const sh = upload.sheets;
+          const totalCedentes = (sh.tranche || []).length;
+          const exceeded = (sh.tranche || []).filter(r => {
+            const keys = Object.keys(r);
+            const dispKey = keys.find(k => k.toLowerCase().includes('dispon') || k.toLowerCase().includes('excedid'));
+            return dispKey && plParseNum(r[dispKey]) < 0;
+          }).length;
+          const totalPipeline = (sh.pipeline || []).length;
+          const totalTitulos = (sh.titulos || []).length;
+
+          block.innerHTML += `
+        <div class="pl-kpi-row">
+          <div class="pl-kpi kpi-accent">
+            <div class="pl-kpi-label">Empresas Pipeline</div>
+            <div class="pl-kpi-value accent">${totalPipeline}</div>
+          </div>
+          <div class="pl-kpi kpi-cyan">
+            <div class="pl-kpi-label">Cedentes</div>
+            <div class="pl-kpi-value cyan">${totalCedentes}</div>
+          </div>
+          <div class="pl-kpi kpi-yellow">
+            <div class="pl-kpi-label">Tranche Excedida</div>
+            <div class="pl-kpi-value ${exceeded > 0 ? 'yellow' : 'green'}">${exceeded}</div>
+          </div>
+          <div class="pl-kpi kpi-green">
+            <div class="pl-kpi-label">Títulos a Liquidar</div>
+            <div class="pl-kpi-value">${totalTitulos}</div>
+          </div>
+        </div>`;
+        }
+
+        // ── Accordion cards ──
+        const list = document.createElement('div');
+        list.className = 'pl-sheets-list';
+
+        sheetDefs.forEach((def, idx) => {
+          const sheetData = upload && upload.sheets ? (upload.sheets[def.key] || []) : [];
+          const sheetUpdated = upload && upload.sheetDates ? upload.sheetDates[def.key] : null;
+          const sheetStale = plIsStale(sheetUpdated);
+          const cardId = `plcard_${mgr.replace(/\s/g,'_')}_${def.key}`;
+
+          // Meta info
+          let metaHtml = '';
+          if (sheetData.length > 0) {
+            const dateStr = sheetUpdated ? plFormatDate(sheetUpdated) : '';
+            const badgeClass = sheetStale ? 'badge-warn' : 'badge-ok';
+            const badgeIcon = sheetStale ? '⚠' : '✓';
+            metaHtml = `<span class="${badgeClass}">${badgeIcon} ${sheetData.length} registros</span>`;
+            if (dateStr) metaHtml += `<span class="pl-date-badge${sheetStale ? ' stale' : ''}">🕐 ${dateStr}</span>`;
+          } else {
+            metaHtml = `<span>Sem dados — ${canUpload ? 'clique em Anexar para enviar' : 'aguardando upload'}</span>`;
+          }
+
+          // Upload button
+          let uploadBtn = '';
+          if (canUpload) {
+            uploadBtn = `<label style="cursor:pointer;display:inline-flex">
+              <input type="file" accept=".xlsx,.xls" style="display:none" onchange="plHandleUpload(event,'${mgr}','${def.key}')">
+              <span class="btn btn-outline btn-sm" style="cursor:pointer;font-size:10px">📎 Anexar</span>
+            </label>`;
+          }
+
+          const card = document.createElement('div');
+          card.className = 'pl-sheet-card';
+          card.id = cardId;
+
+          card.innerHTML = `
+          <div class="pl-sheet-trigger" onclick="plToggleCard('${cardId}')">
+            <div class="pl-sheet-emoji ${def.clr}">${def.emoji}</div>
+            <div class="pl-sheet-info">
+              <div class="pl-sheet-name">${def.label}</div>
+              <div class="pl-sheet-meta">${metaHtml}</div>
+            </div>
+            <div class="pl-sheet-actions">
+              ${uploadBtn}
+              ${sheetData.length > 0 ? '<div class="pl-sheet-chevron">▼</div>' : ''}
+            </div>
+          </div>`;
+
+          // Body (expandable)
+          if (sheetData.length > 0) {
+            const body2 = document.createElement('div');
+            body2.className = 'pl-sheet-body';
+            body2.innerHTML = `
+            <div class="pl-table-scroll">${plRenderTable(sheetData, def.key)}</div>
+            <div class="pl-rows-count">${sheetData.length} registro(s)</div>`;
+            card.appendChild(body2);
+          }
+
+          list.appendChild(card);
+        });
+
+        block.appendChild(list);
+        body.appendChild(block);
+      });
+    }
+
+    function plToggleCard(cardId) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      card.classList.toggle('open');
+    }
+
+    function plParseNum(val) {
+      if (val === null || val === undefined || val === '') return 0;
+      if (typeof val === 'number') return val;
+      return parseFloat(String(val).replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+    }
+
+    function plFmtNum(val) {
+      const n = plParseNum(val);
+      return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function plRenderTable(rows, key) {
+      if (!rows || rows.length === 0) return '<div class="pl-empty-sheet">Sem dados</div>';
+      const headers = Object.keys(rows[0]);
+      const isTrancheSheet = key === 'tranche';
+
+      let html = '<table class="pl-data-table"><thead><tr>';
+      headers.forEach(h => { html += `<th>${h}</th>`; });
+      html += '</tr></thead><tbody>';
+
+      rows.forEach(row => {
+        let exceeded = false;
+        if (isTrancheSheet) {
+          const dispKey = headers.find(h =>
+            h.toLowerCase().includes('dispon') || h.toLowerCase().includes('excedid')
+          );
+          if (dispKey && plParseNum(row[dispKey]) < 0) exceeded = true;
+        }
+        html += `<tr${exceeded ? ' class="row-exceeded"' : ''}>`;
+        headers.forEach(h => {
+          let cellVal = row[h] ?? '—';
+          if (typeof cellVal === 'number') {
+            cellVal = cellVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+          html += `<td>${cellVal}</td>`;
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    async function plHandleUpload(event, manager, sheetKey) {
+      const file = event.target.files[0];
+      if (!file) return;
+      event.target.value = '';
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.SheetNames[0];
+        const ws = workbook.Sheets[firstSheet];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        if (!db.pipelineUploads) db.pipelineUploads = {};
+        if (!db.pipelineUploads[manager]) db.pipelineUploads[manager] = { sheets: {}, sheetDates: {}, updatedAt: null };
+        if (!db.pipelineUploads[manager].sheetDates) db.pipelineUploads[manager].sheetDates = {};
+
+        db.pipelineUploads[manager].sheets[sheetKey] = rows;
+        db.pipelineUploads[manager].sheetDates[sheetKey] = new Date().toISOString();
+        db.pipelineUploads[manager].updatedAt = new Date().toISOString();
+
+        await save();
+        notifyAction(`${currentUser.name} atualizou planilha de ${manager}`);
+        showToast(`✅ "${file.name}" carregada — ${rows.length} registros`);
+        renderPipeline();
+        // Auto-open the card that was just uploaded
+        setTimeout(() => {
+          const cardId = `plcard_${manager.replace(/\s/g,'_')}_${sheetKey}`;
+          const card = document.getElementById(cardId);
+          if (card && !card.classList.contains('open')) card.classList.add('open');
+        }, 100);
+      } catch (err) {
+        console.error('Erro ao ler Excel:', err);
+        alert('Erro ao ler o arquivo Excel. Verifique se é um .xlsx válido.');
+      }
     }
 
     /* ════════════════════════════════
@@ -2735,7 +3163,7 @@
        USERS
     ════════════════════════════════ */
     function renderUsers() {
-      const rLabel = { admin: 'Administrador', manager: 'Gerente', coordinator: 'Coordenador' };
+      const rLabel = { admin: 'Administrador', manager: 'Gerente', coordinator: 'Coordenadora' };
       const rClass = { admin: 'role-admin', manager: 'role-manager', coordinator: 'role-coordinator' };
       document.getElementById('usersTableBody').innerHTML = db.users.map(u => `
     <tr>
@@ -2750,13 +3178,15 @@
       ['uId', 'uName', 'uEmail', 'uPass'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('btnDeleteUser').style.display = 'none';
       document.getElementById('uModalTitle').textContent = 'Novo Usuário';
+      populateCoordSelect();
       document.getElementById('userModal').classList.add('open');
     }
     function editUser(id) {
       const u = db.users.find(x => x.id === id);
       document.getElementById('uId').value = u.id; document.getElementById('uName').value = u.name;
       document.getElementById('uEmail').value = u.email; document.getElementById('uPass').value = u.password;
-      document.getElementById('uRole').value = u.role; document.getElementById('uPorte').value = u.porte || '';
+      document.getElementById('uRole').value = u.role;
+      populateCoordSelect(u.porte || '');
       document.getElementById('btnDeleteUser').style.display = u.email === 'admin' ? 'none' : 'inline-flex';
       document.getElementById('uModalTitle').textContent = 'Editar Usuário';
       document.getElementById('userModal').classList.add('open');
@@ -2786,7 +3216,7 @@
     function openExport() {
       const sel = document.getElementById('exportScope'); let opts = [];
       if (isAdmin()) { opts.push('<option value="ALL">Todos os Gerentes</option>'); db.users.filter(u => u.role === 'manager').forEach(u => opts.push(`<option value="${u.name}">${u.name}</option>`)); }
-      else if (currentUser.role === 'coordinator') { const mgrs = getVisibleManagers(); opts.push(`<option value="COORD_ALL">Porte ${currentUser.porte}</option>`); mgrs.forEach(m => opts.push(`<option value="${m}">${m}</option>`)); }
+      else if (currentUser.role === 'coordinator') { const mgrs = getVisibleManagers(); opts.push(`<option value="COORD_ALL">Carteira de ${currentUser.name}</option>`); mgrs.forEach(m => opts.push(`<option value="${m}">${m}</option>`)); }
       else { opts.push(`<option value="${currentUser.name}">${currentUser.name}</option>`); }
       sel.innerHTML = opts.join(''); generateExportText();
       document.getElementById('exportModal').classList.add('open');
