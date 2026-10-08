@@ -1834,6 +1834,44 @@
     .pl-rows-count { font-size: 10px; color: var(--muted); padding: 6px 12px; border-top: 1px solid var(--border); text-align: right; background: var(--surface); }
     .pl-empty-sheet { text-align: center; padding: 24px 16px; color: var(--muted); font-size: 11px; }
 
+    /* Table inside accordion */
+    .pl-table-scroll {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 420px;
+    }
+    .pl-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 600px;
+    }
+    .pl-data-table th {
+      background: var(--surface3);
+      color: var(--text3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 7px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--border2);
+      white-space: nowrap;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .pl-data-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      white-space: nowrap;
+      text-align: center;
+    }
+    .pl-data-table tr:last-child td { border-bottom: none; }
+    .pl-data-table tr:hover td { background: var(--glass2); }
+    .pl-data-table tr.row-exceeded td {
+      background: rgba(245,158,11,0.10) !important;
+      color: var(--red2); font-weight: 700;
+    }
+    .pl-data-table tr.row-exceeded:hover td { background: rgba(239, 68, 68, 0.18) !important; }
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2803,6 +2841,25 @@
       if (!rows || rows.length === 0) return '<div class="pl-empty-sheet">Sem dados</div>';
       const headers = Object.keys(rows[0]);
       const isTrancheSheet = key === 'tranche';
+      
+      const isDaysCol = (h) => {
+        const hLow = h.toLowerCase();
+        return hLow.includes('dias') || hLow.includes('prazo');
+      };
+
+      const isPctCol = (h) => {
+        const hLow = h.toLowerCase();
+        return hLow.includes('%') || hLow.includes('tomada') || hLow.includes('percentual') || hLow.includes('porcentagem');
+      };
+
+      const isMoneyCol = (h) => {
+        if (isDaysCol(h) || isPctCol(h)) return false;
+        const hLow = h.toLowerCase();
+        return hLow.includes('valor') || hLow.includes('limite') || hLow.includes('tranche') || 
+               hLow.includes('dispon') || hLow.includes('excedid') || hLow.includes('título') || 
+               hLow.includes('titulos') || hLow.includes('saldo') || hLow.includes('montante') ||
+               hLow.includes('r$') || hLow.includes('risco');
+      };
 
       let html = '<table class="pl-data-table"><thead><tr>';
       headers.forEach(h => { html += `<th>${h}</th>`; });
@@ -2819,9 +2876,32 @@
         html += `<tr${exceeded ? ' class="row-exceeded"' : ''}>`;
         headers.forEach(h => {
           let cellVal = row[h] ?? '—';
-          if (typeof cellVal === 'number') {
+          
+          if (isPctCol(h)) {
+            const num = plParseNum(cellVal);
+            if (!isNaN(num) && row[h] !== '' && row[h] !== null && row[h] !== undefined && cellVal !== '—') {
+              const pctVal = num * 100;
+              cellVal = pctVal.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%';
+            }
+          } else if (isDaysCol(h)) {
+            const num = plParseNum(cellVal);
+            if (!isNaN(num) && row[h] !== '' && row[h] !== null && row[h] !== undefined && cellVal !== '—') {
+              cellVal = num.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+          } else if (isMoneyCol(h)) {
+            const num = plParseNum(cellVal);
+            if (!isNaN(num) && row[h] !== '' && row[h] !== null && row[h] !== undefined && cellVal !== '—') {
+              const formatted = 'R$ ' + num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              if (num < 0 && !exceeded) {
+                  cellVal = `<span style="color: var(--red2); font-weight: bold;">${formatted}</span>`;
+              } else {
+                  cellVal = formatted;
+              }
+            }
+          } else if (typeof cellVal === 'number') {
             cellVal = cellVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           }
+          
           html += `<td>${cellVal}</td>`;
         });
         html += '</tr>';
@@ -2839,7 +2919,18 @@
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheet = workbook.SheetNames[0];
         const ws = workbook.Sheets[firstSheet];
-        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        let rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        // Remove trailing rows if they contain "Filtros aplicados:"
+        while (rows.length > 0) {
+          const lastRow = rows[rows.length - 1];
+          const lastRowValues = Object.values(lastRow).join(' ').toLowerCase().trim();
+          if (lastRowValues.includes('filtros aplicados:') || lastRowValues === '') {
+            rows.pop();
+          } else {
+            break;
+          }
+        }
 
         if (!db.pipelineUploads) db.pipelineUploads = {};
         if (!db.pipelineUploads[manager]) db.pipelineUploads[manager] = { sheets: {}, sheetDates: {}, updatedAt: null };
